@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="page.author.title">作者主页 - 开源插件市场</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">开源插件市场</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.browse">浏览商店</a>
+          <button class="lang-switch" id="lang-switch" title="切换语言">🌍</button>
+          <div class="user-container"></div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-content">
+      <div class="container">
+        <!-- Back Button -->
+        <a href="store.html" class="btn btn-ghost btn-sm" style="margin-bottom: 1.5rem;">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          <span data-i18n="common.backToStore">返回商店</span>
+        </a>
+
+        <!-- Author Info Card -->
+        <div id="author-info-container">
+          <!-- Author info will be loaded here -->
+        </div>
+
+        <!-- Author's Plugins -->
+        <div style="margin-top: 2rem;">
+          <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">
+            <span data-i18n="detail.author.publishedPlugins">发布的插件</span>
+            <span class="plugins-count" id="plugins-count">(0)</span>
+          </h2>
+          <div id="plugins-container" class="plugin-grid">
+            <!-- Plugins will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.acknowledgments">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.supporters">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.relatedInfo">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">使用条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contactUs">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.joinUs">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="footer.description">开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;" data-i18n="footer.notice">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 获取 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const authorName = urlParams.get('name');
+
+    if (!authorName) {
+      alert(i18n.t('detail.author.nameRequired') || '作者名称不能为空');
+      window.location.href = 'store.html';
+    }
+
+    // 加载作者信息和插件
+    async function loadAuthorData() {
+      const infoContainer = document.getElementById('author-info-container');
+      const pluginsContainer = document.getElementById('plugins-container');
+      
+      try {
+        utils.showLoading(pluginsContainer, i18n.t('common.loadingPlugins') || '加载插件中...');
+        
+        // 获取所有插件并筛选出该作者的插件
+        const data = await api.get('/plugins?limit=1000');
+        const allPlugins = data.items || [];
+        const authorPlugins = allPlugins.filter(p => p.author === authorName);
+        
+        // 获取作者信息（从第一个插件的 github_data 中获取）
+        const firstPlugin = authorPlugins[0];
+        const authorAvatar = firstPlugin?.github_data?.owner?.avatar_url || 
+                            `https://avatars.githubusercontent.com/u/${firstPlugin?.author_github_id || 0}?v=4`;
+        
+        // 渲染作者信息
+        infoContainer.innerHTML = `
+          <div class="card" style="padding: 2rem;">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+              <img src="${authorAvatar}" 
+                   alt="${authorName}" 
+                   style="width: 100px; height: 100px; border-radius: 50%;"
+                   onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=e5e7eb&color=6b7280&size=100'">
+              <div>
+                <h1 style="margin: 0 0 0.5rem 0; font-size: 1.75rem;">${authorName}</h1>
+                <p style="margin: 0; color: var(--text-secondary);">
+                  <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                    ${authorPlugins.length} ${i18n.t('detail.author.plugins') || '个插件'}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // 更新插件计数
+        document.getElementById('plugins-count').textContent = `(${authorPlugins.length})`;
+        
+        if (authorPlugins.length === 0) {
+          utils.showEmpty(pluginsContainer, i18n.t('detail.author.noPlugins') || '该作者暂无发布的插件');
+          return;
+        }
+        
+        // 渲染插件列表
+        pluginsContainer.innerHTML = authorPlugins.map(plugin => `
+          <div class="plugin-card" onclick="window.location.href='plugin-detail.html?id=${plugin.id}'">
+            <div class="plugin-header">
+              <img src="${plugin.github_data?.owner?.avatar_url || `https://avatars.githubusercontent.com/u/${plugin.author_github_id || 0}?v=4`}" 
+                   alt="${plugin.author}" class="plugin-avatar"
+                   onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(plugin.author || "?")}&background=e5e7eb&color=6b7280&size=40'">
+              <div class="plugin-info">
+                <div class="plugin-name-wrapper">
+                  <span class="plugin-author">${plugin.author}</span>
+                  <span class="plugin-author-separator">/</span>
+                  <span class="plugin-name">${plugin.name}</span>
+                  ${plugin.version ? `<span class="plugin-update-badge">+1</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <p class="plugin-description">${plugin.description || (i18n.t('detail.plugin.noDescription') || '暂无描述')}</p>
+            <div class="plugin-stats">
+              <span class="plugin-stat">
+                <svg style="width: 16px; height: 16px;" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+                ${plugin.github_data?.stars || 0}
+              </span>
+              <span class="plugin-stat">
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                </svg>
+                ${plugin.github_data?.forks || 0}
+              </span>
+            </div>
+            <div class="plugin-tags">
+              <span class="badge badge-default">${plugin.category || (i18n.t('detail.plugin.uncategorized') || '未分类')}</span>
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error(i18n.t('detail.author.loadError') || '加载作者信息失败:', error);
+        utils.showError(pluginsContainer, i18n.t('common.loadFailed') || '加载失败，请稍后重试', 'loadAuthorData()');
+      }
+    }
+
+    // 加载数据
+    loadAuthorData();
+  </script>
+</body>
+</html>

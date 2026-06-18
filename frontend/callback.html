@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="callback.title">GitHub 登录回调 - 插件市场</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .callback-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    .callback-box {
+      background: var(--color-bg-secondary);
+      border-radius: 0.75rem;
+      padding: 3rem 2rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-md);
+    }
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .callback-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--color-text-primary);
+    }
+    .callback-message {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+    }
+    .error-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      color: var(--color-error);
+    }
+    .btn {
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="callback-container">
+    <div class="callback-box">
+      <div id="loading-state">
+        <div class="loading-spinner"></div>
+        <div class="callback-title" data-i18n="callback.loading.title">正在登录...</div>
+        <div class="callback-message" data-i18n="callback.loading.processing">正在处理 GitHub 授权</div>
+      </div>
+      
+      <div id="error-state" style="display: none;">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="callback-title" data-i18n="callback.error.title">登录失败</div>
+        <div class="callback-message" id="error-message" data-i18n="callback.error.defaultMessage">授权过程中发生错误</div>
+        <button class="btn btn-primary" onclick="window.location.href='/login.html'" data-i18n="callback.error.backToLogin">返回登录页</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const error = urlParams.get('error');
+      
+      if (error) {
+        showError(i18n.t('callback.error.githubDenied', { error }));
+        return;
+      }
+      
+      if (!code) {
+        showError(i18n.t('callback.error.noAuthCode'));
+        return;
+      }
+      
+      try {
+        // 调用后端 API 换取 token
+        const response = await fetch(`${API_BASE_URL}/auth/github/callback`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || i18n.t('callback.error.loginFailed'));
+        }
+        
+        // 存储认证信息
+        auth.setAuth(data.access_token, data.user);
+        
+        // 根据用户角色重定向
+        const role = data.user.role;
+        let redirectUrl = '/store.html';
+        
+        if (role === 'developer') {
+          redirectUrl = '/developer.html';
+        } else if (role === 'reviewer' || role === 'admin') {
+          redirectUrl = '/admin.html';
+        }
+        
+        window.location.href = redirectUrl;
+        
+      } catch (error) {
+        console.error('登录错误:', error);
+        showError(error.message || i18n.t('callback.error.genericError'));
+      }
+    });
+    
+    function showError(message) {
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('error-state').style.display = 'block';
+      document.getElementById('error-message').textContent = message;
+    }
+  </script>
+</body>
+</html>

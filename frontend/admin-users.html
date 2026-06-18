@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="admin.users.title">用户管理 - 开源插件市场</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">开源插件市场</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.store">浏览商店</a>
+          <button class="language-switcher" onclick="i18n.toggleLanguage()">
+            <span id="current-lang">EN</span>
+          </button>
+          <div class="user-container"></div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Layout with Sidebar -->
+    <div class="layout-with-sidebar">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title" data-i18n="admin.sidebar.management_center">管理中心</div>
+          <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+              <a href="admin.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.dashboard">仪表盘</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-users.html" class="sidebar-nav-link active">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.user_management">用户管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-plugins.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <span data-i18n="admin.sidebar.plugin_management">插件管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-reviewers.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.reviewer_management">审批者管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-categories.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.category_management">分类管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-stats.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.statistics">数据统计</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="admin.users.page_title">用户管理</h1>
+          <p class="page-description" data-i18n="admin.users.page_description">管理平台所有用户</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-body">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+              <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                <label class="form-label" data-i18n="common.search">搜索</label>
+                <input type="text" class="form-input" id="search-input" data-i18n-placeholder="admin.users.search_placeholder" onkeyup="handleSearch(event)">
+              </div>
+              <div class="form-group" style="min-width: 150px; margin-bottom: 0;">
+                <label class="form-label" data-i18n="admin.users.role_filter">角色筛选</label>
+                <select class="form-select" id="role-filter" onchange="handleFilter()">
+                  <option value="" data-i18n="admin.users.all_roles">全部角色</option>
+                  <option value="user" data-i18n="roles.user">普通用户</option>
+                  <option value="developer" data-i18n="roles.developer">开发者</option>
+                  <option value="reviewer" data-i18n="roles.reviewer">审核员</option>
+                  <option value="admin" data-i18n="roles.admin">管理员</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary" onclick="resetFilters()" data-i18n="common.reset">重置</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User List -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="admin.users.list_title">用户列表</h2>
+          </div>
+          <div class="card-body">
+            <div id="users-container">
+              <!-- Users will be loaded here -->
+            </div>
+            <!-- Pagination -->
+            <div id="pagination-container" style="margin-top: 1.5rem; display: none;">
+              <!-- Pagination will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.acknowledgments">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.supporters">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.terms">相关说明</h3>
+              <a href="#" class="footer-link" data-i18n="footer.terms_of_use">使用条款</a>
+              <a href="#" class="footer-link" data-i18n="footer.privacy_policy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contact">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.join_us">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="footer.copyright">开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;" data-i18n="footer.notice">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 更新语言切换按钮状态
+    document.getElementById('current-lang').textContent = i18n.getCurrentLanguage().toUpperCase();
+
+    // 当前状态
+    let currentPage = 1;
+    let currentSearch = '';
+    let currentRole = '';
+    const pageSize = 20;
+
+    // 处理搜索
+    function handleSearch(event) {
+      if (event.key === 'Enter') {
+        currentSearch = document.getElementById('search-input').value.trim();
+        currentPage = 1;
+        loadUsers();
+      }
+    }
+
+    // 处理筛选
+    function handleFilter() {
+      currentRole = document.getElementById('role-filter').value;
+      currentPage = 1;
+      loadUsers();
+    }
+
+    // 重置筛选
+    function resetFilters() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('role-filter').value = '';
+      currentSearch = '';
+      currentRole = '';
+      currentPage = 1;
+      loadUsers();
+    }
+
+    // 加载用户列表
+    async function loadUsers() {
+      const container = document.getElementById('users-container');
+      const paginationContainer = document.getElementById('pagination-container');
+
+      try {
+        utils.showLoading(container, i18n.t('common.loading') || '加载中...');
+
+        // 构建查询参数
+        let url = `/admin/users?page=${currentPage}&limit=${pageSize}`;
+        if (currentSearch) {
+          url += `&search=${encodeURIComponent(currentSearch)}`;
+        }
+        if (currentRole) {
+          url += `&role=${encodeURIComponent(currentRole)}`;
+        }
+
+        const data = await api.get(url);
+        const users = data.items || [];
+        const total = data.total || 0;
+
+        if (users.length === 0) {
+          const emptyDesc = currentSearch || currentRole 
+            ? (i18n.t('admin.users.empty_filtered') || '没有符合筛选条件的用户')
+            : (i18n.t('admin.users.empty') || '系统中还没有用户');
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+              <h3 class="empty-title">${i18n.t('admin.users.empty_title') || '暂无用户'}</h3>
+              <p class="empty-description">${emptyDesc}</p>
+            </div>
+          `;
+          paginationContainer.style.display = 'none';
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th data-i18n="admin.users.username">用户名</th>
+                  <th data-i18n="admin.users.email">邮箱</th>
+                  <th data-i18n="admin.users.role">角色</th>
+                  <th data-i18n="admin.users.register_time">注册时间</th>
+                  <th data-i18n="common.actions">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${users.map(user => `
+                  <tr>
+                    <td>${user.id}</td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <img src="${user.avatar || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${user.username}" class="w-6 h-6 rounded-full">
+                        <span>${user.username}</span>
+                      </div>
+                    </td>
+                    <td>${user.email || '-'}</td>
+                    <td><span class="badge badge-${getRoleClass(user.role)}">${getRoleLabel(user.role)}</span></td>
+                    <td>${utils.formatDate(user.createdAt)}</td>
+                    <td>
+                      <div class="flex gap-1">
+                        <button class="btn btn-ghost btn-sm" onclick="editUser(${user.id}, '${user.username}', '${user.role}', ${user.is_active})">${i18n.t('common.edit') || '编辑'}</button>
+                        <button class="btn btn-${user.is_active ? 'error' : 'success'} btn-sm" onclick="toggleUserStatus(${user.id}, ${!user.is_active})">${user.is_active ? (i18n.t('common.disable') || '禁用') : (i18n.t('common.enable') || '启用')}</button>
+                        <button class="btn btn-error btn-sm" onclick="deleteUser(${user.id}, '${user.username}')">${i18n.t('common.delete') || '删除'}</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        // 渲染分页
+        renderPagination(total, pageSize, currentPage);
+      } catch (error) {
+        utils.showError(container, i18n.t('common.load_failed') || '加载失败，请重试', 'loadUsers()');
+      }
+    }
+
+    // 渲染分页
+    function renderPagination(total, pageSize, currentPage) {
+      const paginationContainer = document.getElementById('pagination-container');
+      const totalPages = Math.ceil(total / pageSize);
+
+      if (totalPages <= 1) {
+        paginationContainer.style.display = 'none';
+        return;
+      }
+
+      let html = `<div style="display: flex; justify-content: space-between; align-items: center;">`;
+      html += `<span style="color: var(--text-secondary); font-size: 0.875rem;">${i18n.t('pagination.total') || '共'} ${total} ${i18n.t('pagination.records') || '条记录'}，${i18n.t('pagination.page') || '第'} ${currentPage}/${totalPages} ${i18n.t('pagination.page_suffix') || '页'}</span>`;
+      html += `<div style="display: flex; gap: 0.5rem;">`;
+
+      // 上一页
+      html += `<button class="btn btn-ghost btn-sm" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">${i18n.t('pagination.prev') || '上一页'}</button>`;
+
+      // 页码
+      const maxButtons = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+      let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+      if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(1, endPage - maxButtons + 1);
+      }
+
+      if (startPage > 1) {
+        html += `<button class="btn btn-ghost btn-sm" onclick="goToPage(1)">1</button>`;
+        if (startPage > 2) {
+          html += `<span style="padding: 0.5rem;">...</span>`;
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentPage ? 'btn-primary' : 'btn-ghost';
+        html += `<button class="btn ${activeClass} btn-sm" onclick="goToPage(${i})">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += `<span style="padding: 0.5rem;">...</span>`;
+        }
+        html += `<button class="btn btn-ghost btn-sm" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      // 下一页
+      html += `<button class="btn btn-ghost btn-sm" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">${i18n.t('pagination.next') || '下一页'}</button>`;
+
+      html += `</div></div>`;
+      paginationContainer.innerHTML = html;
+      paginationContainer.style.display = 'block';
+    }
+
+    // 跳转到指定页
+    function goToPage(page) {
+      currentPage = page;
+      loadUsers();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getRoleClass(role) {
+      const classes = {
+        'user': 'default',
+        'developer': 'info',
+        'reviewer': 'warning',
+        'admin': 'error'
+      };
+      return classes[role] || 'default';
+    }
+
+    function getRoleLabel(role) {
+      const labels = {
+        'user': i18n.t('roles.user') || '普通用户',
+        'developer': i18n.t('roles.developer') || '开发者',
+        'reviewer': i18n.t('roles.reviewer') || '审核员',
+        'admin': i18n.t('roles.admin') || '管理员'
+      };
+      return labels[role] || role;
+    }
+
+    // 编辑用户
+    function editUser(userId, username, currentRole, isActive) {
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'flex';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+          <div class="modal-header">
+            <h3 class="modal-title">${i18n.t('admin.users.edit_title') || '编辑用户'} - ${username}</h3>
+            <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">${i18n.t('admin.users.role') || '角色'}</label>
+              <select id="edit-role" class="form-select">
+                <option value="user" ${currentRole === 'user' ? 'selected' : ''}>${i18n.t('roles.user') || '普通用户'}</option>
+                <option value="developer" ${currentRole === 'developer' ? 'selected' : ''}>${i18n.t('roles.developer') || '开发者'}</option>
+                <option value="reviewer" ${currentRole === 'reviewer' ? 'selected' : ''}>${i18n.t('roles.reviewer') || '审核员'}</option>
+                <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>${i18n.t('roles.admin') || '管理员'}</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="this.closest('.modal').remove()">${i18n.t('common.cancel') || '取消'}</button>
+            <button class="btn btn-primary" onclick="saveUserRole(${userId})">${i18n.t('common.save') || '保存'}</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // 保存用户角色
+    async function saveUserRole(userId) {
+      const role = document.getElementById('edit-role').value;
+      try {
+        await api.put(`/admin/users/${userId}/role`, { role });
+        alert(i18n.t('admin.users.role_update_success') || '用户角色更新成功');
+        document.querySelector('.modal').remove();
+        loadUsers();
+      } catch (error) {
+        alert((i18n.t('admin.users.role_update_failed') || '更新失败: ') + error.message);
+      }
+    }
+
+    // 切换用户状态（禁用/启用）
+    async function toggleUserStatus(userId, isActive) {
+      const action = isActive ? (i18n.t('common.enable') || '启用') : (i18n.t('common.disable') || '禁用');
+      if (!confirm(`${i18n.t('admin.users.toggle_confirm') || '确定要'}${action}${i18n.t('admin.users.toggle_confirm_suffix') || '该用户吗？'}`)) return;
+      
+      try {
+        await api.put(`/admin/users/${userId}/status`, { is_active: isActive });
+        alert(`${i18n.t('admin.users.user') || '用户'}${action}${i18n.t('common.success') || '成功'}`);
+        loadUsers();
+      } catch (error) {
+        alert((i18n.t('common.operation_failed') || '操作失败: ') + error.message);
+      }
+    }
+
+    // 删除用户
+    async function deleteUser(userId, username) {
+      if (!confirm(`${i18n.t('admin.users.delete_confirm') || '确定要删除用户'} "${username}" ${i18n.t('admin.users.delete_confirm_suffix') || '吗？此操作不可恢复！'}`)) return;
+      
+      try {
+        await api.delete(`/admin/users/${userId}`);
+        alert(i18n.t('admin.users.delete_success') || '用户删除成功');
+        loadUsers();
+      } catch (error) {
+        alert((i18n.t('admin.users.delete_failed') || '删除失败: ') + error.message);
+      }
+    }
+
+    // 检查登录状态和管理员权限
+    (async function checkAuth() {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
+        return;
+      }
+      
+      // 检查是否是管理员
+      const user = auth.getUser();
+      if (!user || user.role !== 'admin') {
+        alert(i18n.t('admin.no_permission') || '您没有权限访问此页面');
+        window.location.href = '/';
+        return;
+      }
+      
+      // 加载用户列表
+      loadUsers();
+    })();
+  </script>
+</body>
+</html>

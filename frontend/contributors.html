@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="contributors.title">开源贡献者 - KiraAI 插件商店</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">KiraAI 插件商店</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.browse">浏览商店</a>
+          <div class="user-container">
+            <a href="login.html" class="btn btn-primary btn-sm" data-i18n="nav.login">登录</a>
+          </div>
+          <button class="lang-switch" onclick="i18n.toggleLanguage()" title="Switch Language">
+            <span class="lang-current">中/EN</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-content">
+      <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="contributors.title">开源贡献者</h1>
+          <p class="page-description" data-i18n="contributors.subtitle">感谢所有为 KiraAI 插件生态做出贡献的开发者</p>
+        </div>
+
+        <!-- Developers Grid -->
+        <div id="developers-container" class="creators-grid">
+          <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" data-i18n="msg.loading">加载中...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.thanks">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link" data-i18n="footer.github">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.docs">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">服务条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="site.name">KiraAI 插件商店 - 元数据插件平台</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 加载开发者列表
+    async function loadDevelopers() {
+      const container = document.getElementById('developers-container');
+      const t = (key, params) => window.i18n && window.i18n.t ? window.i18n.t(key, params) : key;
+
+      try {
+        const data = await api.get('/plugins/developers?page=1&limit=100');
+        const developers = data.items || [];
+
+        if (developers.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+              <h3 class="empty-title" data-i18n="msg.empty">暂无数据</h3>
+            </div>
+          `;
+          return;
+        }
+
+        // 批量获取头像
+        const avatarUrls = developers.map(dev => dev.avatar_url).filter(url => url);
+        let avatarMap = {};
+        if (avatarUrls.length > 0 && utils.getAvatarUrlsBatch) {
+          try {
+            avatarMap = await utils.getAvatarUrlsBatch(avatarUrls);
+          } catch (e) {
+            console.error('批量获取头像失败:', e);
+          }
+        }
+
+        // 渲染列表
+        container.innerHTML = developers.map(dev => {
+          let avatarUrl = dev.avatar_url;
+          if (avatarUrl && avatarMap[avatarUrl]) {
+            avatarUrl = avatarMap[avatarUrl].url;
+          }
+          
+          return `
+            <div class="creator-card">
+              <a href="author.html?name=${encodeURIComponent(dev.username)}" class="creator-header" style="text-decoration: none; color: inherit;">
+                <img src="${avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dev.username)}&background=e5e7eb&color=6b7280&size=80`}" 
+                     alt="${dev.username}" class="creator-avatar" style="width: 64px; height: 64px;"
+                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(dev.username)}&background=e5e7eb&color=6b7280&size=80'">
+                <div class="creator-info">
+                  <div class="creator-name">${dev.username}</div>
+                  <div class="creator-plugins-count">${dev.plugin_count || 0} ${t('detail.author.plugins')}</div>
+                </div>
+              </a>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('加载开发者列表失败:', error);
+        utils.showError(container, t('msg.error.load'), 'loadDevelopers()');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDevelopers);
+  </script>
+</body>
+</html>

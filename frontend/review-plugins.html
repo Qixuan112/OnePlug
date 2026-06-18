@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="review.title">插件审核 - 开源插件市场</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">开源插件市场</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.browseStore">浏览商店</a>
+          <button class="lang-switch" onclick="i18n.toggleLanguage()" title="Switch Language">
+            <span class="lang-current">中/EN</span>
+          </button>
+          <div class="user-container"></div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding: 2rem 0;">
+      <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="review.title">插件审核</h1>
+          <p class="page-description" data-i18n="review.subtitle">审核待上架的插件</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+          <div class="stat-card">
+            <div class="stat-value" id="pending-count">-</div>
+            <div class="stat-label" data-i18n="review.pendingStats">待审核</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="approved-count">-</div>
+            <div class="stat-label" data-i18n="review.approvedStats">已通过</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="rejected-count">-</div>
+            <div class="stat-label" data-i18n="review.rejectedStats">已驳回</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" style="margin-bottom: 1.5rem;">
+          <button class="tab-btn active" onclick="switchTab('pending')" id="tab-pending" data-i18n="review.pending">待审核</button>
+          <button class="tab-btn" onclick="switchTab('reviewed')" id="tab-reviewed" data-i18n="review.reviewed">已审核</button>
+        </div>
+
+        <!-- Pending Plugins List -->
+        <div id="pending-section">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title" data-i18n="review.pendingPlugins">待审核插件</h2>
+            </div>
+            <div class="card-body">
+              <div id="pending-container">
+                <!-- Pending plugins will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviewed Plugins List -->
+        <div id="reviewed-section" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title" data-i18n="review.reviewHistory">审核记录</h2>
+            </div>
+            <div class="card-body">
+              <div id="reviewed-container">
+                <!-- Reviewed plugins will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.acknowledgments">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.supporters">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.terms">相关说明</h3>
+              <a href="#" class="footer-link" data-i18n="footer.termsOfUse">使用条款</a>
+              <a href="#" class="footer-link" data-i18n="footer.privacyPolicy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contact">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.joinUs">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="footer.copyright">开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;" data-i18n="footer.notice">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Review Modal -->
+  <div id="review-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="review.modalTitle">审核插件</h3>
+        <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="review-modal-body">
+        <!-- Plugin details will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-error" onclick="showRejectForm()" data-i18n="review.reject">驳回</button>
+        <button class="btn btn-success" onclick="approvePlugin()" data-i18n="review.approve">通过</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject Form Modal -->
+  <div id="reject-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="review.rejectTitle">驳回插件</h3>
+        <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label"><span data-i18n="review.reason">驳回原因</span> <span class="text-error">*</span></label>
+          <textarea class="form-textarea" id="reject-comment" rows="4" data-i18n-placeholder="review.reasonPlaceholder" placeholder="请输入驳回原因，将通知给插件作者..."></textarea>
+          <p class="form-help" data-i18n="review.reasonHelp">请详细说明驳回原因，帮助作者改进</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeRejectModal()" data-i18n="common.cancel">取消</button>
+        <button class="btn btn-error" onclick="confirmReject()" data-i18n="review.confirmReject">确认驳回</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 当前审核的插件ID
+    let currentPluginId = null;
+    let currentPluginData = null;
+
+    // 检查登录状态和权限
+    (async function checkAuth() {
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
+        return;
+      }
+      
+      // 检查是否是审批者或管理员
+      const user = auth.getUser();
+      if (!user || (user.role !== 'reviewer' && user.role !== 'admin')) {
+        alert(i18n.t('review.noPermission') || '您没有权限访问此页面');
+        window.location.href = '/';
+        return;
+      }
+      
+      // 加载数据
+      loadStats();
+      loadPendingPlugins();
+    })();
+
+    // 加载统计数据
+    async function loadStats() {
+      try {
+        const stats = await api.get('/reviewer/stats');
+        document.getElementById('approved-count').textContent = stats.approved || 0;
+        document.getElementById('rejected-count').textContent = stats.rejected || 0;
+      } catch (error) {
+        console.error('加载统计失败:', error);
+      }
+      
+      // 加载待审核数量
+      try {
+        const queue = await api.get('/reviewer/queue');
+        document.getElementById('pending-count').textContent = queue.total || 0;
+      } catch (error) {
+        document.getElementById('pending-count').textContent = '0';
+      }
+    }
+
+    // 切换标签
+    function switchTab(tab) {
+      // 更新按钮状态
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      
+      // 显示/隐藏内容
+      if (tab === 'pending') {
+        document.getElementById('pending-section').style.display = 'block';
+        document.getElementById('reviewed-section').style.display = 'none';
+        loadPendingPlugins();
+      } else {
+        document.getElementById('pending-section').style.display = 'none';
+        document.getElementById('reviewed-section').style.display = 'block';
+        loadReviewedPlugins();
+      }
+    }
+
+    // 加载待审核插件
+    async function loadPendingPlugins() {
+      const container = document.getElementById('pending-container');
+      
+      try {
+        utils.showLoading(container, i18n.t('common.loading') || '加载中...');
+        
+        const data = await api.get('/reviewer/queue');
+        const plugins = data.items || [];
+
+        if (plugins.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <h3 class="empty-title">${i18n.t('review.emptyPendingTitle') || '暂无待审核插件'}</h3>
+              <p class="empty-description">${i18n.t('review.emptyPendingDesc') || '当前没有需要审核的插件'}</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="plugin-list">
+            ${plugins.map(plugin => `
+              <div class="plugin-item" style="display: flex; align-items: start; padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" style="width: 48px; height: 48px; border-radius: 50%; margin-right: 1rem;">
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <h3 style="margin: 0; font-size: 1.125rem;">${plugin.name}</h3>
+                    <span class="badge badge-warning">${i18n.t('review.pendingBadge') || '待审核'}</span>
+                  </div>
+                  <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">${plugin.description || (i18n.t('plugin.noDescription') || '暂无描述')}</p>
+                  <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; color: var(--text-secondary);">
+                    <span>${i18n.t('plugin.author') || '作者'}: ${plugin.author}</span>
+                    <span>${i18n.t('plugin.category') || '分类'}: ${plugin.category || (i18n.t('plugin.uncategorized') || '未分类')}</span>
+                    <span>${i18n.t('plugin.version') || '版本'}: ${plugin.version || 'unknown'}</span>
+                    <span>${i18n.t('plugin.submitted') || '提交'}: ${utils.formatDate(plugin.created_at)}</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-primary btn-sm" onclick="openReviewModal(${plugin.id})">${i18n.t('review.review') || '审核'}</button>
+                  <a href="${plugin.repo_url}" target="_blank" class="btn btn-ghost btn-sm">${i18n.t('plugin.viewRepo') || '查看仓库'}</a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (error) {
+        utils.showError(container, i18n.t('common.loadError') || '加载失败，请重试', 'loadPendingPlugins()');
+      }
+    }
+
+    // 加载已审核记录
+    async function loadReviewedPlugins() {
+      const container = document.getElementById('reviewed-container');
+      
+      try {
+        utils.showLoading(container, i18n.t('common.loading') || '加载中...');
+        
+        const data = await api.get('/reviewer/reviewed');
+        const records = data.items || [];
+
+        if (records.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              <h3 class="empty-title">${i18n.t('review.emptyHistoryTitle') || '暂无审核记录'}</h3>
+              <p class="empty-description">${i18n.t('review.emptyHistoryDesc') || '您还没有审核过任何插件'}</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th data-i18n="review.pluginName">插件名称</th>
+                  <th data-i18n="review.action">操作</th>
+                  <th data-i18n="review.comment">审核意见</th>
+                  <th data-i18n="review.reviewTime">审核时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${records.map(record => `
+                  <tr>
+                    <td>${record.plugin_name}</td>
+                    <td>
+                      <span class="badge ${record.action === 'approve' ? 'badge-success' : 'badge-error'}">
+                        ${record.action === 'approve' ? (i18n.t('review.approved') || '通过') : (i18n.t('review.rejected') || '驳回')}
+                      </span>
+                    </td>
+                    <td>${record.comment || '-'}</td>
+                    <td>${utils.formatDate(record.created_at)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        utils.showError(container, i18n.t('common.loadError') || '加载失败，请重试', 'loadReviewedPlugins()');
+      }
+    }
+
+    // 打开审核模态框
+    async function openReviewModal(pluginId) {
+      currentPluginId = pluginId;
+      
+      try {
+        // 获取插件详情（使用审批者专用接口）
+        const plugin = await api.get(`/reviewer/plugins/${pluginId}`);
+        currentPluginData = plugin;
+        
+        const modalBody = document.getElementById('review-modal-body');
+        modalBody.innerHTML = `
+          <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" style="width: 64px; height: 64px; border-radius: 50%;">
+              <div>
+                <h2 style="margin: 0;">${plugin.name}</h2>
+                <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary);">${i18n.t('plugin.by') || 'by'} ${plugin.author}</p>
+              </div>
+            </div>
+            <p style="color: var(--text-secondary);">${plugin.description || (i18n.t('plugin.noDescription') || '暂无描述')}</p>
+          </div>
+
+          <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem;">${i18n.t('review.repoInfo') || '仓库信息'}</h4>
+            <div style="font-size: 0.875rem; color: var(--text-secondary);">
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('review.repoUrl') || '仓库地址:'}</strong> <a href="${plugin.repo_url}" target="_blank">${plugin.repo_url}</a></p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.category') || '分类:'}</strong> ${plugin.category || (i18n.t('plugin.uncategorized') || '未分类')}</p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.version') || '版本:'}</strong> ${plugin.version || 'unknown'}</p>
+            </div>
+          </div>
+
+          ${plugin.manifest ? `
+            <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+              <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem;">Manifest ${i18n.t('review.info') || '信息'}</h4>
+              <pre style="margin: 0; font-size: 0.75rem; overflow-x: auto;"><code>${JSON.stringify(plugin.manifest, null, 2)}</code></pre>
+            </div>
+          ` : ''}
+
+          <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem;">
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem;">${i18n.t('review.githubData') || 'GitHub 数据'}</h4>
+            <div style="font-size: 0.875rem; color: var(--text-secondary);">
+              <p style="margin: 0.25rem 0;"><strong>Stars:</strong> ${plugin.github_data?.stargazers_count || 0}</p>
+              <p style="margin: 0.25rem 0;"><strong>Forks:</strong> ${plugin.github_data?.forks_count || 0}</p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.language') || 'Language:'}</strong> ${plugin.github_data?.language || 'Unknown'}</p>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('review-modal').style.display = 'flex';
+      } catch (error) {
+        alert((i18n.t('review.loadDetailError') || '加载插件详情失败：') + error.message);
+      }
+    }
+
+    // 关闭审核模态框
+    function closeReviewModal() {
+      document.getElementById('review-modal').style.display = 'none';
+      currentPluginId = null;
+      currentPluginData = null;
+    }
+
+    // 显示驳回表单
+    function showRejectForm() {
+      document.getElementById('reject-modal').style.display = 'flex';
+    }
+
+    // 关闭驳回模态框
+    function closeRejectModal() {
+      document.getElementById('reject-modal').style.display = 'none';
+      document.getElementById('reject-comment').value = '';
+    }
+
+    // 通过插件
+    async function approvePlugin() {
+      if (!currentPluginId) return;
+      
+      if (!confirm(i18n.t('review.confirmApprove') || '确定要通过这个插件吗？')) {
+        return;
+      }
+      
+      try {
+        await api.post(`/reviewer/plugins/${currentPluginId}/approve`, {});
+        closeReviewModal();
+        alert(i18n.t('review.approvedSuccess') || '插件已通过！');
+        loadStats();
+        loadPendingPlugins();
+      } catch (error) {
+        if (error.message && error.message.includes('400')) {
+          alert(i18n.t('review.statusChanged') || '该插件已被审批或状态已变更，请刷新页面查看最新状态');
+          loadPendingPlugins();
+        } else {
+          alert((i18n.t('common.actionError') || '操作失败：') + error.message);
+        }
+      }
+    }
+
+    // 确认驳回
+    async function confirmReject() {
+      if (!currentPluginId) return;
+      
+      const comment = document.getElementById('reject-comment').value.trim();
+      if (!comment) {
+        alert(i18n.t('review.enterReason') || '请输入驳回原因');
+        return;
+      }
+      
+      try {
+        await api.post(`/reviewer/plugins/${currentPluginId}/reject`, { comment });
+        closeRejectModal();
+        closeReviewModal();
+        alert(i18n.t('review.rejectedSuccess') || '插件已驳回！');
+        loadStats();
+        loadPendingPlugins();
+      } catch (error) {
+        if (error.message && error.message.includes('400')) {
+          alert(i18n.t('review.statusChanged') || '该插件已被审批或状态已变更，请刷新页面查看最新状态');
+          loadPendingPlugins();
+        } else {
+          alert((i18n.t('common.actionError') || '操作失败：') + error.message);
+        }
+      }
+    }
+
+    // 点击模态框外部关闭
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

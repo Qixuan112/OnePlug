@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="admin.title">管理仪表盘</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">开源插件市场</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.browse_store">浏览商店</a>
+          <button class="lang-switch" onclick="i18n.toggleLanguage()" title="Switch Language">
+          <span class="lang-current">中/EN</span>
+        </button>
+          <div class="user-container"></div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Layout with Sidebar -->
+    <div class="layout-with-sidebar">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title" data-i18n="admin.management_center">管理中心</div>
+          <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+              <a href="admin.html" class="sidebar-nav-link active">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                <span data-i18n="admin.dashboard">仪表盘</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-users.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span data-i18n="admin.user_management">用户管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-plugins.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <span data-i18n="admin.plugin_management">插件管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-reviewers.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span data-i18n="admin.reviewer_management">审批者管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-categories.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                <span data-i18n="admin.category_management">分类管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-stats.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span data-i18n="admin.statistics">数据统计</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="admin.title">管理仪表盘</h1>
+          <p class="page-description" id="welcome-text" data-i18n="admin.subtitle">系统概览和管理入口</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="stats-container">
+          <div class="stat-card">
+            <div class="stat-info">
+              <p class="stat-label" data-i18n="admin.stats.total_plugins">插件统计</p>
+              <p class="stat-value" id="stat-total-plugins">0</p>
+            </div>
+            <div class="stat-icon info">
+              <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <p class="stat-label" data-i18n="admin.stats.total_users">用户统计</p>
+              <p class="stat-value" id="stat-total-users">0</p>
+            </div>
+            <div class="stat-icon success">
+              <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <p class="stat-label" data-i18n="admin.stats.pending">待审批</p>
+              <p class="stat-value" id="stat-pending">0</p>
+            </div>
+            <div class="stat-icon warning">
+              <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <p class="stat-label" data-i18n="admin.stats.approved">已通过</p>
+              <p class="stat-value" id="stat-approved">0</p>
+            </div>
+            <div class="stat-icon success">
+              <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-body">
+            <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;" data-i18n="admin.quick_actions">快速操作</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+              <a href="admin-users.html" class="btn btn-primary">
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span data-i18n="admin.user_management">用户管理</span>
+              </a>
+              <a href="admin-plugins.html" class="btn btn-secondary">
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <span data-i18n="admin.plugin_management">插件管理</span>
+              </a>
+              <a href="admin-stats.html" class="btn btn-secondary">
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span data-i18n="admin.statistics">数据统计</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card" style="margin-top: 2rem;">
+          <div class="card-body">
+            <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;" data-i18n="admin.recent_activity">最近活动</h2>
+            <div id="activity-container" class="activity-list">
+              <!-- Activities will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.acknowledgments">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.supporters">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.notices">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">使用条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contact">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.join">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="footer.description">开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;" data-i18n="footer.notice">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 检查登录状态和管理员权限
+    if (!auth.isAuthenticated()) {
+      window.location.href = '/login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
+    } else if (!auth.hasRole('admin')) {
+      window.location.href = '/403.html';
+    }
+
+    // 更新欢迎文本
+    const user = auth.getUser();
+    if (user) {
+      document.getElementById('welcome-text').textContent = i18n.t('admin.welcome_back', { username: user.username });
+    }
+
+    // 加载统计数据
+    async function loadStats() {
+      try {
+        const stats = await api.get('/admin/stats');
+        console.log('Stats loaded:', stats);
+        
+        // 插件统计
+        if (stats.plugins) {
+          const p = stats.plugins;
+          const totalPlugins = (p.draft || 0) + (p.pending || 0) + (p.approved || 0) + (p.rejected || 0) + (p.removed || 0);
+          
+          // 更新统计卡片（使用正确的 ID）
+          const totalPluginsEl = document.getElementById('stat-total-plugins');
+          const totalCountEl = document.getElementById('total-count');
+          const pendingEl = document.getElementById('stat-pending');
+          const pendingCountEl = document.getElementById('pending-count');
+          const approvedEl = document.getElementById('stat-approved');
+          const approvedCountEl = document.getElementById('approved-count');
+          const rejectedEl = document.getElementById('stat-rejected');
+          const rejectedCountEl = document.getElementById('rejected-count');
+          
+          if (totalPluginsEl) totalPluginsEl.textContent = totalPlugins;
+          if (totalCountEl) totalCountEl.textContent = totalPlugins;
+          if (pendingEl) pendingEl.textContent = p.pending || 0;
+          if (pendingCountEl) pendingCountEl.textContent = p.pending || 0;
+          if (approvedEl) approvedEl.textContent = p.approved || 0;
+          if (approvedCountEl) approvedCountEl.textContent = p.approved || 0;
+          if (rejectedEl) rejectedEl.textContent = p.rejected || 0;
+          if (rejectedCountEl) rejectedCountEl.textContent = p.rejected || 0;
+        }
+        
+        // 用户统计
+        if (stats.users) {
+          const u = stats.users;
+          const totalUsers = (u.developers || 0) + (u.reviewers || 0) + (u.admins || 0) + (u.users || 0);
+          
+          const totalUsersEl = document.getElementById('stat-total-users');
+          if (totalUsersEl) totalUsersEl.textContent = totalUsers;
+        }
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+
+    // 加载最近活动
+    async function loadActivities() {
+      try {
+        const response = await api.get('/admin/activities?limit=5');
+        const container = document.getElementById('activity-container');
+        
+        // 处理响应数据（可能是对象包含 items 数组）
+        const activities = Array.isArray(response) ? response : (response.items || []);
+        
+        if (!activities || activities.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state" style="padding: 2rem;">
+              <svg class="empty-icon" style="width: 48px; height: 48px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <p>${i18n.t('admin.no_activity')}</p>
+            </div>
+          `;
+          return;
+        }
+
+        const activityConfig = {
+          'submit': { icon: 'package', color: 'success', titleKey: 'activity.plugin_submit' },
+          'approve': { icon: 'check', color: 'info', titleKey: 'activity.plugin_approve' },
+          'reject': { icon: 'x', color: 'error', titleKey: 'activity.plugin_reject' },
+          'force_ban': { icon: 'shield', color: 'error', titleKey: 'activity.plugin_ban' },
+          'assign_role': { icon: 'user', color: 'info', titleKey: 'activity.role_assign' },
+          'revoke_role': { icon: 'users', color: 'default', titleKey: 'activity.role_revoke' }
+        };
+
+        container.innerHTML = activities.map(log => {
+          const config = activityConfig[log.action] || { icon: 'info', color: 'default', titleKey: 'activity.operation' };
+          return `
+            <div class="activity-item">
+              <div class="activity-icon ${config.color}">
+                ${getIcon(config.icon)}
+              </div>
+              <div class="activity-content">
+                <p class="activity-title">${i18n.t(config.titleKey)}</p>
+                <p class="activity-description">${getActivityDescription(log)}</p>
+              </div>
+              <span class="activity-time">${utils.formatTimeAgo(log.created_at)}</span>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Failed to load activities:', error);
+      }
+    }
+
+    function getIcon(name) {
+      const icons = {
+        'package': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
+        'check': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+        'x': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+        'shield': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+        'user': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+        'users': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+        'info': '<svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+      };
+      return icons[name] || icons.info;
+    }
+
+    function getActivityDescription(log) {
+      switch (log.action) {
+        case 'submit':
+          return i18n.t('activity.desc_submit');
+        case 'approve':
+          return i18n.t('activity.desc_approve');
+        case 'reject':
+          return log.reason || i18n.t('activity.desc_reject');
+        case 'force_ban':
+          return log.reason || i18n.t('activity.desc_ban');
+        case 'assign_role':
+          return i18n.t('activity.desc_assign_role');
+        case 'revoke_role':
+          return i18n.t('activity.desc_revoke_role');
+        default:
+          return log.reason || i18n.t('activity.desc_default');
+      }
+    }
+
+    loadStats();
+    loadActivities();
+  </script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="site.name">KiraAI 插件商店</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">KiraAI 插件商店</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.browse">浏览商店</a>
+          <div class="user-container">
+            <a href="login.html" class="btn btn-primary btn-sm" data-i18n="nav.login">登录</a>
+          </div>
+          <button class="lang-switch" onclick="i18n.toggleLanguage()" title="Switch Language">
+            <span class="lang-current">中/EN</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="page-content hero-section">
+      <div class="container" style="padding: 3rem 1.5rem;">
+        <div style="text-align: center; max-width: 768px; margin: 0 auto;">
+          <h1 class="hero-title" data-i18n="hero.title">
+            发现优质开源插件
+          </h1>
+          <p class="hero-description" data-i18n="hero.subtitle">
+            基于 GitHub 的插件市场，严格审核，安全可靠。
+            为开发者提供高质量的插件发现平台。
+          </p>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+            <a href="store.html" class="btn btn-primary btn-lg" data-i18n="hero.browseBtn">浏览插件</a>
+            <a href="login.html" class="btn btn-outline btn-lg" data-i18n="hero.publishBtn">发布插件</a>
+          </div>
+        </div>
+
+        <!-- 精选插件区 -->
+        <section class="featured-section" style="margin-top: 3rem;">
+          <div class="featured-header">
+            <h2 class="featured-title">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976-2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+              </svg>
+              <span data-i18n="featured.title">精选插件</span>
+              <span class="featured-badge" id="featured-badge">1 / 3</span>
+            </h2>
+            <a href="store.html" class="btn btn-ghost btn-sm" data-i18n="featured.viewAll">查看全部</a>
+          </div>
+          <div class="featured-grid" id="featured-plugins">
+            <!-- 精选插件将通过 JS 动态加载 -->
+            <div class="loading-container" style="grid-column: 1 / -1;">
+              <div class="loading-spinner"></div>
+              <p class="loading-text" data-i18n="msg.loading">加载中...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 活跃创作者区 -->
+        <section class="creators-section">
+          <div class="creators-header">
+            <h2 class="creators-title">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <span data-i18n="creators.title">活跃创作者</span>
+              <span class="featured-badge" id="creators-badge">1 / 2</span>
+            </h2>
+          </div>
+          <div id="active-creators">
+            <!-- 创作者将通过 JS 动态加载 -->
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p class="loading-text" data-i18n="msg.loading">加载中...</p>
+            </div>
+          </div>
+        </section>
+
+
+
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.thanks">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link" data-i18n="footer.github">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.community">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.docs">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">服务条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+              </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="site.name">KiraAI 插件商店 - 元数据插件平台</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 首页特定的 JavaScript
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadFeaturedPlugins();
+      await loadActiveCreators();
+    });
+
+    // 加载精选插件
+    async function loadFeaturedPlugins() {
+      const container = document.getElementById('featured-plugins');
+      const t = (key, params) => window.i18n && window.i18n.t ? window.i18n.t(key, params) : key;
+
+      try {
+        const response = await fetch('/api/plugins?limit=4&sortBy=stars');
+        const data = await response.json();
+        
+        if (!data.items || data.items.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+              <p class="empty-description" data-i18n="msg.empty.plugins">暂无插件</p>
+            </div>
+          `;
+          return;
+        }
+
+        // 更新徽章
+        document.getElementById('featured-badge').textContent = t('featured.badge')
+          .replace('{current}', '1')
+          .replace('{total}', Math.min(data.items.length, 4));
+
+        container.innerHTML = data.items.slice(0, 4).map((plugin, index) => `
+          <div class="plugin-card plugin-card-featured" onclick="window.location.href='plugin-detail.html?id=${plugin.id}'">
+            <div class="plugin-header">
+              <img src="https://avatars.githubusercontent.com/u/${plugin.author_github_id || 0}?v=4" 
+                   alt="${plugin.author}" class="plugin-avatar">
+              <div class="plugin-info">
+                <div class="plugin-name-wrapper">
+                  <span class="plugin-author">${plugin.author}</span>
+                  <span class="plugin-author-separator">/</span>
+                  <span class="plugin-name">${plugin.name}</span>
+                  ${plugin.version ? `<span class="plugin-update-badge">+1</span>` : ''}
+                </div>
+                <div class="plugin-version">${plugin.category || t('store.category.all')}</div>
+              </div>
+            </div>
+            <p class="plugin-description">${plugin.description || t('msg.empty')}</p>
+            <div class="plugin-stats">
+              <span class="plugin-stat">
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976-2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                </svg>
+                ${plugin.github_data?.stars || 0}
+              </span>
+              <span class="plugin-stat">
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                </svg>
+                ${plugin.github_data?.forks || 0}
+              </span>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('加载精选插件失败:', error);
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <p class="empty-description">${t('msg.error.load')}</p>
+          </div>
+        `;
+      }
+    }
+
+    // 加载活跃创作者
+    async function loadActiveCreators() {
+      const container = document.getElementById('active-creators');
+      const t = (key, params) => window.i18n && window.i18n.t ? window.i18n.t(key, params) : key;
+
+      try {
+        const response = await fetch('/api/plugins?limit=20');
+        const data = await response.json();
+        
+        if (!data.items || data.items.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+
+        // 按作者分组
+        const creatorsMap = new Map();
+        data.items.forEach(plugin => {
+          if (!creatorsMap.has(plugin.author)) {
+            creatorsMap.set(plugin.author, {
+              author: plugin.author,
+              author_github_id: plugin.author_github_id,
+              plugins: []
+            });
+          }
+          creatorsMap.get(plugin.author).plugins.push(plugin);
+        });
+
+        // 按插件数量排序，取前2个
+        const creators = Array.from(creatorsMap.values())
+          .sort((a, b) => b.plugins.length - a.plugins.length)
+          .slice(0, 2);
+
+        // 更新徽章
+        document.getElementById('creators-badge').textContent = t('featured.badge')
+          .replace('{current}', '1')
+          .replace('{total}', creators.length);
+
+        container.innerHTML = creators.map(creator => `
+          <div class="creator-card">
+            <div class="creator-header">
+              <img src="https://avatars.githubusercontent.com/u/${creator.author_github_id || 0}?v=4" 
+                   alt="${creator.author}" class="creator-avatar">
+              <div class="creator-info">
+                <div class="creator-name">${creator.author}</div>
+                <div class="creator-plugins-count">${creator.plugins.length} ${t('detail.author.plugins')}</div>
+              </div>
+            </div>
+            <div class="creator-plugins">
+              ${creator.plugins.slice(0, 3).map(plugin => `
+                <div class="plugin-card" onclick="window.location.href='plugin-detail.html?id=${plugin.id}'" style="margin-bottom: 0;">
+                  <div class="plugin-name-wrapper" style="margin-bottom: 0.5rem;">
+                    <span class="plugin-name" style="font-size: 0.875rem;">${plugin.name}</span>
+                  </div>
+                  <p class="plugin-description" style="font-size: 0.75rem; margin-bottom: 0.5rem;">${plugin.description || t('msg.empty')}</p>
+                  <div class="plugin-tags">
+                    <span class="badge badge-default" style="font-size: 0.625rem;">${plugin.category || t('store.category.all')}</span>
+                    ${plugin.github_data?.stars ? `
+                      <span class="badge badge-default" style="font-size: 0.625rem;">
+                        <svg style="width: 10px; height: 10px; display: inline;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976-2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        ${plugin.github_data.stars}
+                      </span>
+                    ` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('加载创作者失败:', error);
+        container.innerHTML = '';
+      }
+    }
+  </script>
+</body>
+</html>

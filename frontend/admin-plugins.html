@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="adminPlugins.title">插件管理</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">开源插件市场</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.store">浏览商店</a>
+          <button class="lang-switch" onclick="i18n.toggleLanguage()" aria-label="切换语言">
+            <svg class="lang-switch-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+            </svg>
+            <span class="lang-switch-text" id="lang-switch-text">English</span>
+          </button>
+          <div class="user-container"></div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Layout with Sidebar -->
+    <div class="layout-with-sidebar">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title" data-i18n="admin.sidebar.managementCenter">管理中心</div>
+          <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+              <a href="admin.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.dashboard">仪表盘</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-users.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.userManagement">用户管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-plugins.html" class="sidebar-nav-link active">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <span data-i18n="admin.sidebar.pluginManagement">插件管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-reviewers.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.reviewerManagement">审批者管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-categories.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.categoryManagement">分类管理</span>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="admin-stats.html" class="sidebar-nav-link">
+                <svg class="sidebar-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span data-i18n="admin.sidebar.statistics">数据统计</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="adminPlugins.title">插件管理</h1>
+          <p class="page-description" data-i18n="adminPlugins.subtitle">管理所有插件的审核状态</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+          <div class="stat-card">
+            <div class="stat-value" id="total-count">-</div>
+            <div class="stat-label" data-i18n="adminPlugins.stats.totalPlugins">总插件数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="pending-count">-</div>
+            <div class="stat-label" data-i18n="adminPlugins.stats.pendingReview">待审核</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="approved-count">-</div>
+            <div class="stat-label" data-i18n="adminPlugins.stats.approved">已通过</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="rejected-count">-</div>
+            <div class="stat-label" data-i18n="adminPlugins.stats.rejected">已驳回</div>
+          </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-body">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+              <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                <label class="form-label" data-i18n="adminPlugins.search.label">搜索插件</label>
+                <input type="text" class="form-input" id="search-input" data-i18n-placeholder="adminPlugins.search.placeholder" placeholder="搜索插件名称..." onkeyup="handleSearch(event)">
+              </div>
+              <button class="btn btn-secondary" onclick="resetSearch()" data-i18n="common.reset">重置</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="tabs" style="margin-bottom: 1.5rem;">
+          <button class="tab-btn active" onclick="filterPlugins('all')" id="tab-all" data-i18n="adminPlugins.tabs.all">全部</button>
+          <button class="tab-btn" onclick="filterPlugins('pending')" id="tab-pending" data-i18n="adminPlugins.tabs.pending">待审核</button>
+          <button class="tab-btn" onclick="filterPlugins('approved')" id="tab-approved" data-i18n="adminPlugins.tabs.approved">已通过</button>
+          <button class="tab-btn" onclick="filterPlugins('rejected')" id="tab-rejected" data-i18n="adminPlugins.tabs.rejected">已驳回</button>
+          <button class="tab-btn" onclick="filterPlugins('removed')" id="tab-removed" data-i18n="adminPlugins.tabs.removed">已下架</button>
+        </div>
+
+        <!-- Plugin List -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="adminPlugins.pluginList.title">插件列表</h2>
+          </div>
+          <div class="card-body">
+            <div id="plugins-container">
+              <!-- Plugins will be loaded here -->
+            </div>
+            <!-- Pagination -->
+            <div id="pagination-container" style="margin-top: 1.5rem; display: none;">
+              <!-- Pagination will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.acknowledgments">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.supporters">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.notice">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">使用条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contact">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.joinUs">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p data-i18n="footer.description">开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;" data-i18n="footer.noticeText">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 当前状态 - 必须在函数调用之前声明
+    let allPlugins = [];
+    let currentFilter = 'all';
+    let currentSearch = '';
+    let currentPage = 1;
+    const pageSize = 20;
+
+    // 检查登录状态和管理员权限
+    (async function checkAuth() {
+      // Wait for i18n to be ready
+      if (typeof i18n !== 'undefined' && i18n.init) {
+        await i18n.init();
+      }
+      
+      if (!auth.isAuthenticated()) {
+        window.location.href = '/login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
+        return;
+      }
+      
+      const user = auth.getUser();
+      if (!user || user.role !== 'admin') {
+        alert(i18n.t('admin.errors.noPermission'));
+        window.location.href = '/';
+        return;
+      }
+      
+      loadStats();
+      loadPlugins();
+    })();
+
+    // 处理搜索
+    function handleSearch(event) {
+      if (event.key === 'Enter') {
+        currentSearch = document.getElementById('search-input').value.trim();
+        currentPage = 1;
+        loadPlugins();
+      }
+    }
+
+    // 重置搜索
+    function resetSearch() {
+      document.getElementById('search-input').value = '';
+      currentSearch = '';
+      currentPage = 1;
+      loadPlugins();
+    }
+
+    // 加载统计数据
+    async function loadStats() {
+      try {
+        const stats = await api.get('/admin/stats');
+        console.log('Stats loaded:', stats);
+        
+        if (stats.plugins) {
+          const p = stats.plugins;
+          const totalPlugins = (p.draft || 0) + (p.pending || 0) + (p.approved || 0) + (p.rejected || 0) + (p.removed || 0);
+          
+          const totalCountEl = document.getElementById('total-count');
+          const pendingCountEl = document.getElementById('pending-count');
+          const approvedCountEl = document.getElementById('approved-count');
+          const rejectedCountEl = document.getElementById('rejected-count');
+          
+          if (totalCountEl) totalCountEl.textContent = totalPlugins;
+          if (pendingCountEl) pendingCountEl.textContent = p.pending || 0;
+          if (approvedCountEl) approvedCountEl.textContent = p.approved || 0;
+          if (rejectedCountEl) rejectedCountEl.textContent = p.rejected || 0;
+        }
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
+    }
+
+    // 加载插件列表
+    async function loadPlugins() {
+      const container = document.getElementById('plugins-container');
+      const paginationContainer = document.getElementById('pagination-container');
+
+      try {
+        container.innerHTML = '<div style="text-align: center; padding: 2rem;"><div class="loading-spinner"></div><p>' + i18n.t('common.loading') + '</p></div>';
+
+        // 构建查询参数
+        let url = `/admin/plugins?page=${currentPage}&limit=${pageSize}`;
+        if (currentSearch) {
+          url += `&search=${encodeURIComponent(currentSearch)}`;
+        }
+        if (currentFilter !== 'all') {
+          url += `&status=${encodeURIComponent(currentFilter)}`;
+        }
+
+        console.log('Loading plugins from:', url);
+        const data = await api.get(url);
+        console.log('Plugins data:', data);
+        
+        const plugins = data.items || [];
+        const total = data.total || 0;
+
+        if (plugins.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+              <h3 class="empty-title" data-i18n="adminPlugins.empty.noPlugins">暂无插件</h3>
+              <p class="empty-description">${currentSearch || currentFilter !== 'all' ? i18n.t('adminPlugins.empty.noResults') : i18n.t('adminPlugins.empty.noPluginsInStatus')}</p>
+            </div>
+          `;
+          paginationContainer.style.display = 'none';
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th data-i18n="adminPlugins.table.pluginName">插件名称</th>
+                  <th data-i18n="adminPlugins.table.author">作者</th>
+                  <th data-i18n="adminPlugins.table.category">分类</th>
+                  <th data-i18n="adminPlugins.table.status">状态</th>
+                  <th data-i18n="adminPlugins.table.submissionTime">提交时间</th>
+                  <th data-i18n="adminPlugins.table.actions">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${plugins.map(plugin => `
+                  <tr>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" class="w-6 h-6 rounded-full">
+                        <span>${plugin.name}</span>
+                      </div>
+                    </td>
+                    <td>${plugin.author}</td>
+                    <td>${plugin.category || '-'}</td>
+                    <td>
+                      <span class="badge badge-${getStatusClass(plugin.status)}">${getStatusLabel(plugin.status)}</span>
+                    </td>
+                    <td>${utils.formatDate(plugin.created_at)}</td>
+                    <td>
+                      <a href="${plugin.repo_url}" target="_blank" class="btn btn-ghost btn-sm" data-i18n="adminPlugins.actions.viewRepo">查看仓库</a>
+                      ${plugin.status === 'approved' ? `
+                        <button class="btn btn-error btn-sm" onclick="banPlugin(${plugin.id}, '${plugin.name}')" data-i18n="adminPlugins.actions.ban">下架</button>
+                      ` : ''}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        // 渲染分页
+        renderPagination(total, pageSize, currentPage);
+      } catch (error) {
+        console.error('Failed to load plugins:', error);
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <h3 class="empty-title" data-i18n="common.error.title">出错了</h3>
+            <p class="empty-description">${i18n.t('common.error.loadingFailed')}: ${error.message || i18n.t('common.error.pleaseRetry')}</p>
+            <button class="btn btn-primary" onclick="loadPlugins()" data-i18n="common.retry">重试</button>
+          </div>
+        `;
+        paginationContainer.style.display = 'none';
+      }
+    }
+
+    // 过滤插件
+    function filterPlugins(status) {
+      currentFilter = status;
+
+      // 更新标签状态
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('tab-' + status).classList.add('active');
+
+      currentPage = 1;
+      loadPlugins();
+    }
+
+    // 渲染分页
+    function renderPagination(total, pageSize, currentPage) {
+      const paginationContainer = document.getElementById('pagination-container');
+      const totalPages = Math.ceil(total / pageSize);
+
+      if (totalPages <= 1) {
+        paginationContainer.style.display = 'none';
+        return;
+      }
+
+      let html = `<div style="display: flex; justify-content: space-between; align-items: center;">`;
+      html += `<span style="color: var(--text-secondary); font-size: 0.875rem;">${i18n.t('pagination.total', { total })} ${i18n.t('pagination.pageInfo', { currentPage, totalPages })}</span>`;
+      html += `<div style="display: flex; gap: 0.5rem;">`;
+
+      // 上一页
+      html += `<button class="btn btn-ghost btn-sm" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">${i18n.t('pagination.previous')}</button>`;
+
+      // 页码
+      const maxButtons = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+      let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+      if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(1, endPage - maxButtons + 1);
+      }
+
+      if (startPage > 1) {
+        html += `<button class="btn btn-ghost btn-sm" onclick="goToPage(1)">1</button>`;
+        if (startPage > 2) {
+          html += `<span style="padding: 0.5rem;">...</span>`;
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentPage ? 'btn-primary' : 'btn-ghost';
+        html += `<button class="btn ${activeClass} btn-sm" onclick="goToPage(${i})">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += `<span style="padding: 0.5rem;">...</span>`;
+        }
+        html += `<button class="btn btn-ghost btn-sm" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      // 下一页
+      html += `<button class="btn btn-ghost btn-sm" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">${i18n.t('pagination.next')}</button>`;
+
+      html += `</div></div>`;
+      paginationContainer.innerHTML = html;
+      paginationContainer.style.display = 'block';
+    }
+
+    // 跳转到指定页
+    function goToPage(page) {
+      currentPage = page;
+      loadPlugins();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getStatusClass(status) {
+      const classes = {
+        'pending': 'warning',
+        'approved': 'success',
+        'rejected': 'error',
+        'removed': 'default'
+      };
+      return classes[status] || 'default';
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        'pending': i18n.t('plugin.status.pending'),
+        'approved': i18n.t('plugin.status.approved'),
+        'rejected': i18n.t('plugin.status.rejected'),
+        'removed': i18n.t('plugin.status.removed')
+      };
+      return labels[status] || status;
+    }
+
+    // 下架插件
+    async function banPlugin(pluginId, pluginName) {
+      if (!confirm(i18n.t('adminPlugins.confirmBan', { pluginName }))) {
+        return;
+      }
+
+      try {
+        await api.post(`/admin/plugins/${pluginId}/ban`, {});
+        alert(i18n.t('adminPlugins.banSuccess'));
+        loadPlugins(); // 刷新列表
+      } catch (error) {
+        alert(i18n.t('adminPlugins.banFailed') + '：' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>

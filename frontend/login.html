@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="login.title">欢迎回来</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">KiraAI 插件商店</a>
+        <button class="lang-switch" onclick="i18n.toggleLanguage()" title="Switch Language">
+          <span class="lang-current">中/EN</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Login Form -->
+    <main class="page-content" style="display: flex; align-items: center; justify-content: center; padding: 2rem;">
+      <div style="width: 100%; max-width: 400px;">
+        <div class="card" style="padding: 2rem;">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;" data-i18n="login.title">欢迎回来</h1>
+            <p style="color: var(--color-text-secondary);" data-i18n="login.subtitle">使用 GitHub 账号登录以继续</p>
+          </div>
+
+          <!-- Error Message -->
+          <div id="error-message" class="alert alert-error" style="display: none; margin-bottom: 1rem;">
+            <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span id="error-text"></span>
+          </div>
+
+          <!-- GitHub Login Button -->
+          <button id="github-login" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+            <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            <span data-i18n="login.githubBtn">使用 GitHub 登录</span>
+          </button>
+
+          <div style="margin-top: 1.5rem; text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--color-text-muted);" data-i18n="login.terms">
+              登录即表示您同意我们的服务条款
+            </p>
+          </div>
+
+          <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;" data-i18n="login.noAccount">还没有账号？</p>
+            <p style="font-size: 0.75rem; color: var(--color-text-muted);">
+              首次使用 GitHub 登录将自动创建账号
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: center;">
+          <a href="store.html" style="font-size: 0.875rem; color: var(--color-text-secondary);" data-i18n="btn.backToStore">← 返回商店</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.thanks">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.community">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.docs">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">使用条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contact">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.joinUs">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 处理 OAuth 回调
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const token = urlParams.get('token');
+    
+    if (error) {
+      const errorMessages = {
+        'access_denied': i18n.t('login.error.accessDenied') || '您拒绝了授权请求',
+        'invalid_request': i18n.t('login.error.invalidRequest') || '无效的请求参数',
+        'invalid_scope': i18n.t('login.error.invalidScope') || '无效的权限范围',
+        'auth_failed': i18n.t('login.error.authFailed') || '认证失败，请重试',
+        'token_exchange_failed': i18n.t('login.error.tokenExchangeFailed') || '无法获取访问令牌',
+        'user_fetch_failed': i18n.t('login.error.userFetchFailed') || '无法获取用户信息'
+      };
+      document.getElementById('error-text').textContent = errorMessages[error] || i18n.t('login.error.default') || '登录过程中发生错误，请重试';
+      document.getElementById('error-message').style.display = 'flex';
+    }
+    
+    if (token) {
+      // 存储 token 并获取用户信息
+      localStorage.setItem('plugin_marketplace_token', token);
+      // 清除 URL 参数
+      window.history.replaceState({}, '', window.location.pathname);
+      // 跳转到开发者页面
+      window.location.href = '/developer.html';
+    }
+    
+    // 检查是否已登录
+    if (auth.isAuthenticated()) {
+      window.location.href = '/developer.html';
+    }
+    
+    // GitHub 登录按钮
+    document.getElementById('github-login').addEventListener('click', () => {
+      // 这里应该配置你的 GitHub OAuth Client ID
+      // 从 https://github.com/settings/developers 创建的 OAuth App 获取
+      const GITHUB_CLIENT_ID = '';
+      const scope = 'read:user user:email';
+      const redirectUri = encodeURIComponent(window.location.origin + '/callback.html');
+      
+      if (!GITHUB_CLIENT_ID) {
+        document.getElementById('error-text').textContent = 'GitHub OAuth 未配置，请联系管理员';
+        document.getElementById('error-message').style.display = 'flex';
+        return;
+      }
+      
+      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}`;
+      window.location.href = githubAuthUrl;
+    });
+  </script>
+</body>
+</html>

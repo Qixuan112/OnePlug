@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="detail.title">插件详情 - 开源插件市场</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+  <style>
+    :root {
+      --bg-primary: var(--color-background-gray, #f9fafb);
+      --bg-secondary: var(--color-background, #ffffff);
+      --text-secondary: var(--color-text-secondary, #6b7280);
+      --border-color: var(--color-border, #e5e7eb);
+      --primary: var(--color-primary, #111827);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: var(--color-background-gray, #1f2937);
+      --bg-secondary: var(--color-background, #111827);
+      --text-secondary: var(--color-text-secondary, #9ca3af);
+      --border-color: var(--color-border, #374151);
+      --primary: var(--color-primary, #f9fafb);
+    }
+
+    .markdown-body {
+      box-sizing: border-box;
+      min-width: 200px;
+      max-width: 100%;
+      margin: 0 auto;
+      color: var(--color-text, #111827);
+    }
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4,
+    .markdown-body h5,
+    .markdown-body h6 {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .markdown-body h1 { font-size: 2em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+    .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+    .markdown-body h3 { font-size: 1.25em; }
+    .markdown-body p { margin-bottom: 16px; }
+    .markdown-body ul, .markdown-body ol { padding-left: 2em; margin-bottom: 16px; }
+    .markdown-body li { margin-bottom: 0.25em; }
+    .markdown-body code {
+      padding: 0.2em 0.4em;
+      margin: 0;
+      font-size: 85%;
+      background-color: rgba(175, 184, 193, 0.25);
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      color: var(--color-text, #111827);
+    }
+    .markdown-body pre {
+      padding: 16px;
+      overflow: auto;
+      font-size: 85%;
+      line-height: 1.45;
+      background-color: var(--color-background-gray, #f9fafb);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+    .markdown-body pre code {
+      display: inline;
+      padding: 0;
+      margin: 0;
+      overflow: visible;
+      line-height: inherit;
+      word-wrap: normal;
+      background-color: transparent;
+      border: 0;
+    }
+    .markdown-body blockquote {
+      padding: 0.5em 1em;
+      color: var(--color-text-secondary, #6b7280);
+      border-left: 0.25em solid var(--color-border, #e5e7eb);
+      margin-bottom: 16px;
+      background-color: var(--color-background-gray, #f9fafb);
+      border-radius: 0 6px 6px 0;
+    }
+    .markdown-body table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      width: 100%;
+      border: 1px solid var(--border-color);
+    }
+    .markdown-body table th,
+    .markdown-body table td {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+    }
+    .markdown-body table th {
+      background-color: var(--color-background-gray, #f9fafb);
+      font-weight: 600;
+      color: var(--color-text, #111827);
+    }
+    .markdown-body table tr {
+      background-color: var(--bg-secondary);
+    }
+    .markdown-body table tr:nth-child(2n) {
+      background-color: var(--color-background-gray, #f9fafb);
+    }
+    .markdown-body img {
+      max-width: 100%;
+      box-sizing: content-box;
+    }
+    .markdown-body a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .markdown-body a:hover {
+      text-decoration: underline;
+    }
+
+    /* 覆盖 github-markdown-css 的亮色模式样式 */
+    .markdown-body {
+      background-color: transparent !important;
+    }
+
+    /* 暗色模式适配 */
+    [data-theme="dark"] .markdown-body {
+      color: var(--color-text, #f9fafb) !important;
+    }
+
+    [data-theme="dark"] .markdown-body h1,
+    [data-theme="dark"] .markdown-body h2,
+    [data-theme="dark"] .markdown-body h3,
+    [data-theme="dark"] .markdown-body h4,
+    [data-theme="dark"] .markdown-body h5,
+    [data-theme="dark"] .markdown-body h6 {
+      color: var(--color-text, #f9fafb) !important;
+      border-bottom-color: var(--color-border, #374151) !important;
+    }
+
+    [data-theme="dark"] .markdown-body p,
+    [data-theme="dark"] .markdown-body li {
+      color: var(--color-text, #f9fafb) !important;
+    }
+
+    [data-theme="dark"] .markdown-body code {
+      background-color: rgba(175, 184, 193, 0.15) !important;
+      color: var(--color-text, #f9fafb) !important;
+    }
+
+    [data-theme="dark"] .markdown-body pre {
+      background-color: var(--color-background-gray, #1f2937) !important;
+      border-color: var(--color-border, #374151) !important;
+    }
+
+    [data-theme="dark"] .markdown-body pre code {
+      color: var(--color-text, #f9fafb) !important;
+    }
+
+    [data-theme="dark"] .markdown-body blockquote {
+      color: var(--color-text-secondary, #9ca3af) !important;
+      background-color: var(--color-background-gray, #1f2937) !important;
+      border-left-color: var(--color-border, #374151) !important;
+    }
+
+    [data-theme="dark"] .markdown-body table th,
+    [data-theme="dark"] .markdown-body table td {
+      border-color: var(--color-border, #374151) !important;
+    }
+
+    [data-theme="dark"] .markdown-body table th {
+      background-color: var(--color-background-gray, #1f2937) !important;
+      color: var(--color-text, #f9fafb) !important;
+    }
+
+    [data-theme="dark"] .markdown-body table tr {
+      background-color: var(--color-background, #111827) !important;
+    }
+
+    [data-theme="dark"] .markdown-body table tr:nth-child(2n) {
+      background-color: var(--color-background-gray, #1f2937) !important;
+    }
+
+    [data-theme="dark"] .markdown-body hr {
+      background-color: var(--color-border, #374151) !important;
+    }
+
+    [data-theme="dark"] .markdown-body strong {
+      color: var(--color-text, #f9fafb) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <a href="/" class="logo" data-i18n="site.name">开源插件市场</a>
+        <nav class="nav-links">
+          <a href="store.html" class="nav-link" data-i18n="nav.browse">浏览商店</a>
+          <div class="user-container"></div>
+          <button class="lang-switch" onclick="i18n.toggleLanguage()" title="Switch Language">
+            <span class="lang-current">中/EN</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding: 2rem 0;">
+      <div class="container">
+        <!-- Back Button -->
+        <a href="store.html" class="btn btn-ghost btn-sm" style="margin-bottom: 1.5rem;" data-i18n="detail.back">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          返回商店
+        </a>
+
+        <!-- Plugin Detail Card -->
+        <div id="plugin-detail-container">
+          <!-- Plugin details will be loaded here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.acknowledgments">特别鸣谢</h3>
+              <a href="https://github.com/" target="_blank" class="footer-link">GitHub</a>
+              <a href="contributors.html" class="footer-link" data-i18n="footer.contributors">开源贡献者</a>
+              <a href="#" class="footer-link" data-i18n="footer.supporters">社区支持者</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.notices">相关说明</h3>
+              <a href="terms.html" class="footer-link" data-i18n="footer.terms">使用条款</a>
+              <a href="privacy.html" class="footer-link" data-i18n="footer.privacy">隐私政策</a>
+              <a href="#" class="footer-link" data-i18n="footer.disclaimer">免责声明</a>
+            </div>
+            <div class="footer-section">
+              <h3 class="footer-section-title" data-i18n="footer.contact">联系我们</h3>
+              <a href="mailto:contact@example.com" class="footer-link" data-i18n="footer.email">电子邮箱</a>
+              <a href="#" class="footer-link" data-i18n="footer.feedback">问题反馈</a>
+              <a href="#" class="footer-link" data-i18n="footer.join">加入我们</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>开源插件市场 - 元数据插件平台</p>
+            <p style="margin-top: 0.5rem;">本站不托管插件文件，请直接访问 GitHub 仓库获取</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    // 获取 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const pluginId = urlParams.get('id');
+
+    if (!pluginId) {
+      alert(i18n.t('detail.emptyId'));
+      window.location.href = 'store.html';
+    }
+
+    // 加载插件详情
+    async function loadPluginDetail() {
+      const container = document.getElementById('plugin-detail-container');
+      
+      try {
+        utils.showLoading(container, i18n.t('detail.loading'));
+        
+        const plugin = await api.get(`/plugins/${pluginId}`);
+        
+        container.innerHTML = `
+          <div class="card" style="padding: 2rem;">
+            <!-- Plugin Header -->
+            <div style="display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border-color);">
+              <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" style="width: 80px; height: 80px; border-radius: 50%;">
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                  <h1 style="margin: 0; font-size: 1.75rem;">${plugin.name}</h1>
+                  <span class="badge badge-success" data-i18n="status.approved">已通过</span>
+                </div>
+                <p style="margin: 0 0 0.75rem 0; color: var(--text-secondary); font-size: 1.125rem;">${plugin.description || i18n.t('detail.noDescription')}</p>
+                <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                  <a href="author.html?name=${encodeURIComponent(plugin.author)}" style="display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); text-decoration: none;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    ${plugin.author}
+                  </a>
+                  <span style="display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary);">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    ${plugin.category || i18n.t('detail.uncategorized')}
+                  </span>
+                  <span style="display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary);">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    v${plugin.version || 'unknown'}
+                  </span>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="${plugin.repo_url}" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+                  <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  <span data-i18n="detail.visitRepo">访问仓库</span>
+                </a>
+                <a href="${plugin.repo_url ? plugin.repo_url.replace(/\.git$/, '') + '/archive/refs/heads/main.zip' : '#'}" target="_blank" class="btn btn-outline" style="display: flex; align-items: center; gap: 0.5rem;" download>
+                  <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                  </svg>
+                  <span data-i18n="detail.download">下载插件</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+              <div class="stat-card">
+                <div class="stat-value">${plugin.github_data?.stargazers_count || 0}</div>
+                <div class="stat-label" data-i18n="detail.stats.stars">Stars</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${plugin.github_data?.forks_count || 0}</div>
+                <div class="stat-label" data-i18n="detail.stats.forks">Forks</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${plugin.github_data?.open_issues_count || 0}</div>
+                <div class="stat-label" data-i18n="detail.stats.issues">Issues</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${plugin.github_data?.language || 'Unknown'}</div>
+                <div class="stat-label" data-i18n="detail.stats.language">语言</div>
+              </div>
+            </div>
+
+            <!-- Manifest Info -->
+            ${plugin.manifest ? `
+              <div style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 0.5rem;">
+                <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;" data-i18n="detail.pluginInfo">插件信息</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                  ${plugin.manifest.name ? `
+                    <div>
+                      <span style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="detail.manifest.name">名称</span>
+                      <p style="margin: 0.25rem 0 0 0; font-weight: 500;">${plugin.manifest.name}</p>
+                    </div>
+                  ` : ''}
+                  ${plugin.manifest.version ? `
+                    <div>
+                      <span style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="detail.manifest.version">版本</span>
+                      <p style="margin: 0.25rem 0 0 0; font-weight: 500;">${plugin.manifest.version}</p>
+                    </div>
+                  ` : ''}
+                  ${plugin.manifest.author ? `
+                    <div>
+                      <span style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="detail.manifest.author">作者</span>
+                      <p style="margin: 0.25rem 0 0 0; font-weight: 500;">${plugin.manifest.author}</p>
+                    </div>
+                  ` : ''}
+                  ${plugin.manifest.license ? `
+                    <div>
+                      <span style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="detail.manifest.license">许可证</span>
+                      <p style="margin: 0.25rem 0 0 0; font-weight: 500;">${plugin.manifest.license}</p>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- README -->
+            ${plugin.readme ? `
+              <div>
+                <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;" data-i18n="detail.readme">README</h3>
+                <div class="markdown-body" style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 0.5rem; overflow-x: auto;">
+                  ${marked.parse(plugin.readme)}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      } catch (error) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <h3 class="empty-title" data-i18n="detail.loadFailed">加载失败</h3>
+            <p class="empty-description" data-i18n="detail.loadFailedDesc">无法加载插件详情，请稍后重试</p>
+            <a href="store.html" class="btn btn-primary" style="margin-top: 1rem;" data-i18n="detail.back">返回商店</a>
+          </div>
+        `;
+      }
+    }
+
+    // 加载插件详情
+    loadPluginDetail();
+  </script>
+</body>
+</html>

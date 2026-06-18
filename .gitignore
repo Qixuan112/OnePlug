@@ -1,0 +1,53 @@
+# ===== 敏感配置 =====
+.env
+.env.*
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Flask instance 目录（含本地数据库等本地数据）
+instance/
+
+# ===== 数据库文件 =====
+*.db
+*.sqlite
+*.sqlite3
+dev.db
+
+# ===== 迁移缓存 =====
+migrations/__pycache__/
+
+# ===== 日志 =====
+*.log
+logs/
+
+# ===== 备份文件 =====
+*.bak
+*.bak.*
+
+# ===== 编辑器 / 系统 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ===== 前端 =====
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# 虚拟环境
+venv/
+.venv/
+env/
