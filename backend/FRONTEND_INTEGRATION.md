@@ -17,7 +17,7 @@ cjsc_py/
 │   ├── app/globals.css          # 全局样式
 │   └── package.json
 │
-└── backend_py/                  # Flask 后端项目
+└── backend/                  # Flask 后端项目
     ├── app/
     │   ├── routes/              # API 路由
     │   ├── services/            # 业务逻辑
@@ -183,7 +183,7 @@ npm run build
 
 1. **启动 Flask 后端**:
    ```bash
-   cd backend_py
+   cd backend
    python wsgi.py
    # 或使用 Flask 命令
    flask run --port=5000
@@ -201,7 +201,7 @@ npm run build
 Flask 后端已配置 CORS，允许前端跨域访问：
 
 ```python
-# backend_py/app/__init__.py
+# backend/app/__init__.py
 CORS(app, resources={
     r"/api/*": {
         "origins": app.config.get('CORS_ORIGINS', '*'),

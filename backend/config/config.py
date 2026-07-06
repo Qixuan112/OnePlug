@@ -6,11 +6,10 @@ class Config:
     """基础配置类"""
     
     # Flask 基础配置
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key-here'
-    
+    SECRET_KEY = os.environ.get('SECRET_KEY') or os.environ.get('JWT_SECRET_KEY', 'dev-only-secret-key')
+
     # 数据库配置
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'mysql+pymysql://user:password@localhost/dbname'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///dev.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_size': 10,
@@ -19,7 +18,7 @@ class Config:
     }
     
     # JWT 配置
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'your-jwt-secret-key'
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'dev-only-jwt-secret')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_TOKEN_LOCATION = ['headers']

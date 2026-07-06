@@ -23,7 +23,7 @@
 
 ```
 .
-├── backend_py/        # 后端 Flask 服务
+├── backend/        # 后端 Flask 服务
 │   ├── app/           # 应用主目录（models / routes / services / utils）
 │   ├── config/        # 环境配置
 │   ├── migrations/    # 数据库迁移
@@ -43,7 +43,7 @@
 ### 1. 后端
 
 ```bash
-cd backend_py
+cd backend
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
@@ -65,13 +65,13 @@ python wsgi.py
 
 ## 必要配置
 
-部署前需在 [GitHub Developer Settings](https://github.com/settings/developers) 创建 OAuth App，并将 `Client ID` / `Client Secret` 填入 `.env`。详见 `backend_py/.env.example`。
+部署前需在 [GitHub Developer Settings](https://github.com/settings/developers) 创建 OAuth App，并将 `Client ID` / `Client Secret` 填入 `.env`。详见 `backend/.env.example`。
 
 ## 文档
 
-- 后端 API：[`backend_py/API.md`](backend_py/API.md)
-- 前端对接：[`backend_py/FRONTEND_INTEGRATION.md`](backend_py/FRONTEND_INTEGRATION.md)
-- 后端说明：[`backend_py/README.md`](backend_py/README.md)
+- 后端 API：[`backend/API.md`](backend/API.md)
+- 前端对接：[`backend/FRONTEND_INTEGRATION.md`](backend/FRONTEND_INTEGRATION.md)
+- 后端说明：[`backend/README.md`](backend/README.md)
 
 ## 许可证
 

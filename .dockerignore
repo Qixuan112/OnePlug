@@ -1,0 +1,11 @@
+.git
+.gitignore
+*.md
+*.pyc
+__pycache__
+.env
+backend/.env
+backend/venv
+backend/*.db
+backend/migrations/versions
+backend/.flaskenv

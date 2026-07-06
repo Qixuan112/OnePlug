@@ -28,7 +28,7 @@
 ## 项目结构
 
 ```
-backend_py/
+backend/
 ├── app/                    # 应用主目录
 │   ├── __init__.py         # Flask 应用初始化
 │   ├── models/             # 数据库模型

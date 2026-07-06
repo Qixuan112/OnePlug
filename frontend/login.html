@@ -131,20 +131,25 @@
       window.location.href = '/developer.html';
     }
     
+    let GITHUB_CLIENT_ID = null;
+
+    // 页面加载时预取 OAuth 配置
+    fetch('/api/auth/config')
+      .then(r => r.json())
+      .then(data => { GITHUB_CLIENT_ID = data.githubClientId; })
+      .catch(() => {});
+
     // GitHub 登录按钮
     document.getElementById('github-login').addEventListener('click', () => {
-      // 这里应该配置你的 GitHub OAuth Client ID
-      // 从 https://github.com/settings/developers 创建的 OAuth App 获取
-      const GITHUB_CLIENT_ID = '';
       const scope = 'read:user user:email';
-      const redirectUri = encodeURIComponent(window.location.origin + '/callback.html');
-      
+      const redirectUri = encodeURIComponent(window.location.origin + '/callback');
+
       if (!GITHUB_CLIENT_ID) {
         document.getElementById('error-text').textContent = 'GitHub OAuth 未配置，请联系管理员';
         document.getElementById('error-message').style.display = 'flex';
         return;
       }
-      
+
       const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}`;
       window.location.href = githubAuthUrl;
     });

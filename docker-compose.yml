@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-kiraai_root_2024}
+      MYSQL_DATABASE: plugin_marketplace
+      MYSQL_USER: ${MYSQL_USER:-kiraai}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-kiraai_pwd_2024}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-kiraai_root_2024}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-kiraai}:${MYSQL_PASSWORD:-kiraai_pwd_2024}@db:3306/plugin_marketplace
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production-use-a-long-random-string}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      DB_HOST: db
+      DB_PORT: "3306"
+      MYSQL_USER: ${MYSQL_USER:-kiraai}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-kiraai_pwd_2024}
+      MYSQL_DATABASE: plugin_marketplace
+
+volumes:
+  mysql_data:

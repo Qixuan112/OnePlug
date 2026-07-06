@@ -11,7 +11,9 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-load_dotenv()
+# 加载项目根目录的 .env（app/__init__.py -> app -> backend -> 项目根目录）
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
 
 from config.config import config
 
@@ -20,17 +22,17 @@ db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
 
-# 获取前端目录路径（模块级别）
-# app/__init__.py -> app -> backend_py -> cjsc_py -> frontend
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'frontend')
+FRONTEND_DIR = os.path.join(PROJECT_ROOT, 'frontend')
 
 
 def create_app(config_name=None):
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
-    
+
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+
+    print(f"[DEBUG] config_name={config_name}, DB={config[config_name].SQLALCHEMY_DATABASE_URI}, FLASK_ENV={os.environ.get('FLASK_ENV')}")
     
     # 将前端目录存储在 app.config 中
     app.config['FRONTEND_DIR'] = FRONTEND_DIR

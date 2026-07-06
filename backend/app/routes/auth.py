@@ -4,6 +4,7 @@
 提供 GitHub OAuth 认证、Token 刷新和当前用户信息获取的 API 端点
 """
 
+import os
 from flask import Blueprint, request, jsonify
 
 from app.services.auth_service import (
@@ -16,6 +17,14 @@ from app.services.auth_service import (
 from app.utils.decorators import jwt_required_custom
 
 bp = Blueprint('auth', __name__)
+
+
+@bp.route('/config', methods=['GET'])
+def get_oauth_config():
+    """返回 OAuth 前端配置（不敏感信息）"""
+    return jsonify({
+        'githubClientId': os.environ.get('GITHUB_CLIENT_ID', '')
+    }), 200
 
 
 @bp.route('/github/callback', methods=['POST'])
