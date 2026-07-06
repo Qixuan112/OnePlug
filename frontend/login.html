@@ -151,6 +151,11 @@
       }
 
       const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}`;
+      console.log('[OAuth Debug]', {
+        clientId: GITHUB_CLIENT_ID,
+        redirectUri: decodeURIComponent(redirectUri),
+        fullUrl: githubAuthUrl
+      });
       window.location.href = githubAuthUrl;
     });
   </script>

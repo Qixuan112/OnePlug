@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# 等待 MySQL 就绪
-DB_HOST="${DB_HOST:-db}"
+# 等待 MySQL 可连接（兼容内置 MySQL 和外部 MySQL）
+DB_HOST="${DB_HOST:-host.docker.internal}"
 DB_PORT="${DB_PORT:-3306}"
 MAX_RETRIES=30
 RETRY=0
@@ -25,6 +25,7 @@ done
 echo "MySQL is ready."
 
 # 初始化数据库（建表 + 默认分类，幂等）
+cd /app/backend
 python init_db.py
 
 # 启动 Gunicorn

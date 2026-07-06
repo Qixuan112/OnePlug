@@ -146,13 +146,9 @@ def create_app(config_name=None):
     def callback_page():
         return send_from_directory(app.config['FRONTEND_DIR'], 'callback.html')
     
-    # 静态资源文件
-    @app.route('/styles.css')
-    def styles_css():
-        return send_from_directory(app.config['FRONTEND_DIR'], 'styles.css')
-    
-    @app.route('/app.js')
-    def app_js():
-        return send_from_directory(app.config['FRONTEND_DIR'], 'app.js')
-    
+    # 静态资源文件（CSS/JS 等）
+    @app.route('/<path:filename>')
+    def static_files(filename):
+        return send_from_directory(app.config['FRONTEND_DIR'], filename)
+
     return app

@@ -1,42 +1,50 @@
 services:
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-kiraai_root_2024}
-      MYSQL_DATABASE: plugin_marketplace
-      MYSQL_USER: ${MYSQL_USER:-kiraai}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-kiraai_pwd_2024}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-kiraai_root_2024}"]
-      interval: 5s
-      timeout: 3s
-      retries: 30
+  # ============================================
+  # 内置 MySQL（取消注释即可使用，同时注释掉 app 里的 DATABASE_URL）
+  # ============================================
+  # db:
+  #   image: mysql:8.0
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-kiraai_root_2024}
+  #     MYSQL_DATABASE: plugin_marketplace
+  #     MYSQL_USER: ${MYSQL_USER:-kiraai}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD:-kiraai_pwd_2024}
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-kiraai_root_2024}"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 30
 
   app:
     build: .
+    image: kiraai-plugin-store:latest
     restart: unless-stopped
-    ports:
-      - "5000:5000"
-    depends_on:
-      db:
-        condition: service_healthy
+    network_mode: host
+    volumes:
+      # 持久化 SQLite / 数据库文件
+      - ./data:/app/backend/data
+      # 持久化日志
+      - ./logs:/app/backend/logs
+      # 持久化 .env（容器内 load_dotenv 读取路径）
+      - ./.env:/app/.env
     environment:
       FLASK_ENV: production
-      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-kiraai}:${MYSQL_PASSWORD:-kiraai_pwd_2024}@db:3306/plugin_marketplace
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production-use-a-long-random-string}
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-kaips}:${MYSQL_PASSWORD:-YM4SS4TCaYNFJCzw}@127.0.0.1:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-kira-ai-plugin-store}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-ngpVCU!m^9J2xDsKzn&uME&hHD^@m8}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
-      DB_HOST: db
-      DB_PORT: "3306"
-      MYSQL_USER: ${MYSQL_USER:-kiraai}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-kiraai_pwd_2024}
-      MYSQL_DATABASE: plugin_marketplace
+      DB_HOST: 127.0.0.1
+      DB_PORT: "${MYSQL_PORT:-3306}"
+      MYSQL_USER: ${MYSQL_USER:-kaips}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-YM4SS4TCaYNFJCzw}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-kira-ai-plugin-store}
 
-volumes:
-  mysql_data:
+# 使用内置 MySQL 时取消注释
+# volumes:
+#   mysql_data:

@@ -1,8 +1,8 @@
 FROM python:3.10-slim
 
-# 系统依赖（PyMySQL 编译需要）
+# 系统依赖（mysql 客户端用于导入 SQL）
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc default-libmysqlclient-dev curl \
+        default-mysql-client curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/backend
