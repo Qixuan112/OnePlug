@@ -13,11 +13,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # 导入应用工厂
 from app import create_app, db
 
-# 设置环境变量
-os.environ['FLASK_ENV'] = 'production'
-
-# 创建应用实例
-app = create_app('production')
+# 由环境变量 FLASK_ENV 决定配置（docker-compose.yml / .env 中设置）
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000)
