@@ -55,8 +55,8 @@ class Config:
 
     # 插件列表缓存时间（秒）
     # /api/plugins/all 接口的 HTTP Cache-Control max-age
-    # 默认 3600 秒（1 小时）
-    PLUGIN_LIST_CACHE_MAX_AGE = int(os.environ.get('PLUGIN_LIST_CACHE_MAX_AGE', '3600'))
+    # 默认 600 秒（10 分钟）
+    PLUGIN_LIST_CACHE_MAX_AGE = int(os.environ.get('PLUGIN_LIST_CACHE_MAX_AGE', '600'))
 
 
 class DevelopmentConfig(Config):
