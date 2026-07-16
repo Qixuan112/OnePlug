@@ -53,6 +53,11 @@ class Config:
     # 头像请求超时时间（国内服务器建议增加）
     AVATAR_REQUEST_TIMEOUT = int(os.environ.get('AVATAR_REQUEST_TIMEOUT', '15'))
 
+    # 插件列表缓存时间（秒）
+    # /api/plugins/all 接口的 HTTP Cache-Control max-age
+    # 默认 3600 秒（1 小时）
+    PLUGIN_LIST_CACHE_MAX_AGE = int(os.environ.get('PLUGIN_LIST_CACHE_MAX_AGE', '3600'))
+
 
 class DevelopmentConfig(Config):
     """开发环境配置"""

@@ -173,7 +173,9 @@ def get_all_plugins_json():
         }
         
         response = make_response(jsonify(response_data))
-        response.headers['Cache-Control'] = 'public, max-age=600'
+        from flask import current_app
+        cache_max_age = current_app.config.get('PLUGIN_LIST_CACHE_MAX_AGE', 600)
+        response.headers['Cache-Control'] = f'public, max-age={cache_max_age}'
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
         response.headers['Last-Modified'] = last_updated
         
