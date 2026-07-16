@@ -173,7 +173,7 @@ def get_all_plugins_json():
         }
         
         response = make_response(jsonify(response_data))
-        response.headers['Cache-Control'] = 'public, max-age=3600'
+        response.headers['Cache-Control'] = 'public, max-age=600'
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
         response.headers['Last-Modified'] = last_updated
         
