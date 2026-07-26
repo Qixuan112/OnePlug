@@ -30,6 +30,50 @@ GITHUB_AVATAR_MIRRORS = {
     'jsdelivr': 'https://cdn.jsdelivr.net/gh',
 }
 
+# 允许抓取的头像来源主机白名单
+# /api/avatar/proxy 是公开接口，若不限制主机，任意人都能让服务器去请求
+# 内网地址或云元数据服务（SSRF），并把响应内容取回。
+ALLOWED_AVATAR_HOSTS = frozenset({
+    'avatars.githubusercontent.com',
+    'ghproxy.com',
+    'raw.fastgit.org',
+    'cdn.jsdelivr.net',
+    'ui-avatars.com',
+})
+
+
+def is_allowed_avatar_url(url: str) -> bool:
+    """
+    校验头像 URL 是否指向白名单内的主机
+
+    只接受 https，且主机必须在 ALLOWED_AVATAR_HOSTS 中（或其子域）。
+
+    Args:
+        url: 待校验的 URL
+
+    Returns:
+        是否允许抓取
+    """
+    if not url or not isinstance(url, str):
+        return False
+
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+
+    if parsed.scheme != 'https':
+        return False
+
+    host = (parsed.hostname or '').lower()
+    if not host:
+        return False
+
+    return any(
+        host == allowed or host.endswith('.' + allowed)
+        for allowed in ALLOWED_AVATAR_HOSTS
+    )
+
 
 def _get_mirror_url(original_url: str) -> str:
     """
@@ -112,9 +156,17 @@ def _fetch_image_from_url(url: str) -> Optional[tuple[bytes, str]]:
     }
     
     for try_url in urls_to_try:
+        # 逐个复核，镜像替换后的 URL 同样必须落在白名单内
+        if not is_allowed_avatar_url(try_url):
+            continue
         try:
-            response = requests.get(try_url, timeout=timeout, headers=headers)
-            
+            response = requests.get(
+                try_url,
+                timeout=timeout,
+                headers=headers,
+                allow_redirects=False
+            )
+
             if response.status_code == 200:
                 content = response.content
                 
@@ -204,7 +256,11 @@ def get_cached_avatar(source_url: str, username: str = None) -> Optional[AvatarC
     if not source_url:
         # 尝试生成默认头像
         return _generate_default_avatar(username)
-    
+
+    # 非白名单来源一律不抓取、不落库（防 SSRF 与缓存表被撑爆）
+    if not is_allowed_avatar_url(source_url):
+        return _generate_default_avatar(username)
+
     # 查询缓存
     cache = db.session.query(AvatarCache).filter(
         AvatarCache.source_url == source_url
@@ -274,13 +330,18 @@ def get_avatar_or_original(source_url: str, username: str = None) -> str:
     Returns:
         Data URI 或原始 URL
     """
+    def _default_url() -> str:
+        name = username[0].upper() if username else '?'
+        return f"https://ui-avatars.com/api/?name={name}&background=e5e7eb&color=6b7280&size=128"
+
     if not source_url:
         # 生成默认头像 URL
-        if username:
-            name = username[0].upper() if username else '?'
-            return f"https://ui-avatars.com/api/?name={name}&background=e5e7eb&color=6b7280&size=128"
-        return source_url
-    
+        return _default_url() if username else source_url
+
+    # 非白名单来源不回显，直接给默认头像，避免把任意 URL 当作图片源返回
+    if not is_allowed_avatar_url(source_url):
+        return _default_url()
+
     data_uri = get_avatar_data_uri(source_url, username)
     return data_uri if data_uri else source_url
 

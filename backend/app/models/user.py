@@ -68,11 +68,13 @@ class User(db.Model):
         lazy='dynamic',
         cascade='all, delete-orphan'
     )
+    # 审计日志不随用户删除而消失：外键是 ondelete='SET NULL'，
+    # 用 passive_deletes 把清理交给数据库，保留操作痕迹
     audit_logs: Mapped[list['AuditLog']] = relationship(
         'AuditLog',
         back_populates='user',
         lazy='dynamic',
-        cascade='all, delete-orphan'
+        passive_deletes=True
     )
     
     def __repr__(self) -> str:

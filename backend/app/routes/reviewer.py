@@ -15,6 +15,7 @@ from app.services.reviewer_service import (
     get_reviewed_list
 )
 from app.services.plugin_service import get_plugin_by_id_for_reviewer
+from app.utils.pagination import parse_pagination
 
 bp = Blueprint('reviewer', __name__)
 
@@ -58,16 +59,10 @@ def list_review_queue():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-    
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
-    
+    page, limit, error = parse_pagination()
+    if error:
+        return error
+
     # 获取待审核队列
     result = get_review_queue(page=page, limit=limit)
     
@@ -266,16 +261,10 @@ def list_reviewed():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-    
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
-    
+    page, limit, error = parse_pagination()
+    if error:
+        return error
+
     # 获取当前用户
     user = g.current_user
     

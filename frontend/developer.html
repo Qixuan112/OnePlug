@@ -237,7 +237,7 @@
                 </svg>
               </div>
               <div class="plugin-info" style="flex: 1;">
-                <div class="plugin-name" style="font-weight: 600;">${plugin.name}</div>
+                <div class="plugin-name" style="font-weight: 600;">${utils.escapeHtml(plugin.name)}</div>
                 <div class="plugin-meta" style="font-size: 0.875rem; color: var(--color-text-secondary);">
                   ${plugin.status === 'pending' ? t('dev.submitted') : t('dev.reviewed')} ${utils.formatDate(plugin.updatedAt)}
                 </div>

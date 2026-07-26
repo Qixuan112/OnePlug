@@ -581,18 +581,18 @@ def update_user_status(user_id: int, is_active: bool, admin_id: int) -> tuple[bo
 
     # 更新状态
     user.is_active = is_active
-    db.session.commit()
+    user.updated_at = datetime.now(timezone.utc)
 
     # 记录审计日志
     action = AuditAction.enable if is_active else AuditAction.disable
-    log = AuditLog(
-        admin_id=admin_id,
+    AuditLog.log(
+        user_id=admin_id,
         action=action,
-        resource_type=ResourceType.user,
+        resource_type=ResourceType.user.value,
         resource_id=user.id,
         details={'username': user.username, 'is_active': is_active}
     )
-    db.session.add(log)
+
     db.session.commit()
 
     return True, {
@@ -621,16 +621,20 @@ def delete_user(user_id: int, admin_id: int) -> tuple[bool, dict]:
     if user.id == admin_id:
         return False, {'error': 'Cannot delete yourself'}
 
-    # 记录审计日志
-    log = AuditLog(
-        admin_id=admin_id,
+    # 记录审计日志（记在操作者名下，用户删除后依然保留）
+    AuditLog.log(
+        user_id=admin_id,
         action=AuditAction.delete,
-        resource_type=ResourceType.user,
+        resource_type=ResourceType.user.value,
         resource_id=user.id,
         details={'username': user.username, 'email': user.email}
     )
-    db.session.add(log)
-    db.session.commit()
+
+    # 主动摘除被删用户名下的审计记录，保留历史痕迹
+    # （SQLite 默认不强制外键，不能只依赖 ondelete='SET NULL'）
+    db.session.query(AuditLog).filter(
+        AuditLog.user_id == user.id
+    ).update({AuditLog.user_id: None}, synchronize_session=False)
 
     # 删除用户
     db.session.delete(user)

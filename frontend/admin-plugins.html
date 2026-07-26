@@ -316,20 +316,20 @@
                   <tr>
                     <td>
                       <div class="flex items-center gap-2">
-                        <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" class="w-6 h-6 rounded-full">
-                        <span>${plugin.name}</span>
+                        <img src="${utils.safeImageSrc(plugin.github_data?.owner?.avatar_url, 'https://avatars.githubusercontent.com/u/0?v=4')}" alt="${utils.escapeHtml(plugin.author)}" class="w-6 h-6 rounded-full">
+                        <span>${utils.escapeHtml(plugin.name)}</span>
                       </div>
                     </td>
-                    <td>${plugin.author}</td>
-                    <td>${plugin.category || '-'}</td>
+                    <td>${utils.escapeHtml(plugin.author)}</td>
+                    <td>${utils.escapeHtml(plugin.category) || '-'}</td>
                     <td>
                       <span class="badge badge-${getStatusClass(plugin.status)}">${getStatusLabel(plugin.status)}</span>
                     </td>
                     <td>${utils.formatDate(plugin.created_at)}</td>
                     <td>
-                      <a href="${plugin.repo_url}" target="_blank" class="btn btn-ghost btn-sm" data-i18n="adminPlugins.actions.viewRepo">查看仓库</a>
+                      <a href="${utils.safeUrl(plugin.repo_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" data-i18n="adminPlugins.actions.viewRepo">查看仓库</a>
                       ${plugin.status === 'approved' ? `
-                        <button class="btn btn-error btn-sm" onclick="banPlugin(${plugin.id}, '${plugin.name}')" data-i18n="adminPlugins.actions.ban">下架</button>
+                        <button class="btn btn-error btn-sm" data-plugin-id="${plugin.id}" data-plugin-name="${utils.escapeHtml(plugin.name)}" onclick="banPlugin(this.dataset.pluginId, this.dataset.pluginName)" data-i18n="adminPlugins.actions.ban">下架</button>
                       ` : ''}
                     </td>
                   </tr>
@@ -455,8 +455,18 @@
         return;
       }
 
+      // 后端要求必填的下架原因，缺失会直接返回 400
+      const reason = prompt(i18n.t('adminPlugins.banReason') || '请填写下架原因：');
+      if (reason === null) {
+        return;
+      }
+      if (!reason.trim()) {
+        alert(i18n.t('adminPlugins.banReasonRequired') || '下架原因不能为空');
+        return;
+      }
+
       try {
-        await api.post(`/admin/plugins/${pluginId}/ban`, {});
+        await api.post(`/admin/plugins/${pluginId}/ban`, { reason: reason.trim() });
         alert(i18n.t('adminPlugins.banSuccess'));
         loadPlugins(); // 刷新列表
       } catch (error) {

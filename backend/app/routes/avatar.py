@@ -22,6 +22,9 @@ from app.utils.decorators import require_admin
 
 bp = Blueprint('avatar', __name__)
 
+# 批量头像接口单次最多处理的 URL 数量
+MAX_BATCH_URLS = 50
+
 
 @bp.route('/proxy', methods=['GET'])
 def proxy_avatar():
@@ -68,10 +71,16 @@ def proxy_avatar_batch():
     """
     data = request.get_json()
     urls = data.get('urls', []) if data else []
-    
+
     if not urls or not isinstance(urls, list):
         return jsonify({'error': 'Invalid or missing urls parameter'}), 400
-    
+
+    # 公开接口，限制单次批量大小，避免被用作请求放大器
+    if len(urls) > MAX_BATCH_URLS:
+        return jsonify({
+            'error': f'Too many urls, maximum is {MAX_BATCH_URLS}'
+        }), 400
+
     results = {}
     for url in urls:
         if url:

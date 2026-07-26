@@ -11,6 +11,7 @@ from app.utils.decorators import (
     require_reviewer,
     require_admin
 )
+from app.utils.pagination import parse_pagination
 
 __all__ = [
     'jwt_required_custom',
@@ -18,4 +19,5 @@ __all__ = [
     'require_developer',
     'require_reviewer',
     'require_admin',
+    'parse_pagination',
 ]

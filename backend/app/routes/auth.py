@@ -79,7 +79,14 @@ def github_callback():
     user = create_or_update_user(user_info)
     if not user:
         return jsonify({'error': 'Failed to create or update user'}), 500
-    
+
+    # 3.5 被管理员禁用的账号不发放 token
+    if not user.is_active:
+        return jsonify({
+            'error': 'Account disabled',
+            'message': 'This account has been disabled by an administrator'
+        }), 403
+
     # 4. 生成 JWT tokens
     tokens = generate_tokens(user)
     

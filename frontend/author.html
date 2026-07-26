@@ -145,21 +145,21 @@
         
         // 渲染插件列表
         pluginsContainer.innerHTML = authorPlugins.map(plugin => `
-          <div class="plugin-card" onclick="window.location.href='plugin-detail.html?id=${plugin.id}'">
+          <div class="plugin-card" onclick="window.location.href='plugin-detail.html?id=${encodeURIComponent(plugin.id)}'">
             <div class="plugin-header">
-              <img src="${plugin.github_data?.owner?.avatar_url || `https://avatars.githubusercontent.com/u/${plugin.author_github_id || 0}?v=4`}" 
-                   alt="${plugin.author}" class="plugin-avatar"
+              <img src="${utils.safeImageSrc(plugin.github_data?.owner?.avatar_url, `https://avatars.githubusercontent.com/u/${encodeURIComponent(plugin.author_github_id || 0)}?v=4`)}"
+                   alt="${utils.escapeHtml(plugin.author)}" class="plugin-avatar"
                    onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(plugin.author || "?")}&background=e5e7eb&color=6b7280&size=40'">
               <div class="plugin-info">
                 <div class="plugin-name-wrapper">
-                  <span class="plugin-author">${plugin.author}</span>
+                  <span class="plugin-author">${utils.escapeHtml(plugin.author)}</span>
                   <span class="plugin-author-separator">/</span>
-                  <span class="plugin-name">${plugin.name}</span>
+                  <span class="plugin-name">${utils.escapeHtml(plugin.name)}</span>
                   ${plugin.version ? `<span class="plugin-update-badge">+1</span>` : ''}
                 </div>
               </div>
             </div>
-            <p class="plugin-description">${plugin.description || (i18n.t('detail.plugin.noDescription') || '暂无描述')}</p>
+            <p class="plugin-description">${utils.escapeHtml(plugin.description) || (i18n.t('detail.plugin.noDescription') || '暂无描述')}</p>
             <div class="plugin-stats">
               <span class="plugin-stat">
                 <svg style="width: 16px; height: 16px;" fill="currentColor" viewBox="0 0 20 20">
@@ -175,7 +175,7 @@
               </span>
             </div>
             <div class="plugin-tags">
-              <span class="badge badge-default">${plugin.category || (i18n.t('detail.plugin.uncategorized') || '未分类')}</span>
+              <span class="badge badge-default">${utils.escapeHtml(plugin.category) || (i18n.t('detail.plugin.uncategorized') || '未分类')}</span>
             </div>
           </div>
         `).join('');

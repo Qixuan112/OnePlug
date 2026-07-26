@@ -7,6 +7,7 @@
 from flask import Blueprint, request, jsonify, g
 
 from app.utils.decorators import jwt_required_custom, require_admin
+from app.utils.pagination import parse_pagination
 from app.services.admin_service import (
     get_plugins_list,
     ban_plugin,
@@ -50,15 +51,9 @@ def list_plugins():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
+    page, limit, error = parse_pagination()
+    if error:
+        return error
 
     search = request.args.get('search')
     status = request.args.get('status')
@@ -146,15 +141,9 @@ def list_users():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
+    page, limit, error = parse_pagination()
+    if error:
+        return error
 
     search = request.args.get('search')
     role = request.args.get('role')
@@ -612,15 +601,9 @@ def list_activities():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
+    page, limit, error = parse_pagination()
+    if error:
+        return error
 
     # 获取审计日志
     result = get_audit_logs(page=page, limit=limit)

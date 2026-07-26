@@ -146,21 +146,21 @@
           .replace('{total}', Math.min(data.items.length, 4));
 
         container.innerHTML = data.items.slice(0, 4).map((plugin, index) => `
-          <div class="plugin-card plugin-card-featured" onclick="window.location.href='plugin-detail.html?id=${plugin.id}'">
+          <div class="plugin-card plugin-card-featured" onclick="window.location.href='plugin-detail.html?id=${encodeURIComponent(plugin.id)}'">
             <div class="plugin-header">
-              <img src="https://avatars.githubusercontent.com/u/${plugin.author_github_id || 0}?v=4" 
-                   alt="${plugin.author}" class="plugin-avatar">
+              <img src="https://avatars.githubusercontent.com/u/${encodeURIComponent(plugin.author_github_id || 0)}?v=4"
+                   alt="${utils.escapeHtml(plugin.author)}" class="plugin-avatar">
               <div class="plugin-info">
                 <div class="plugin-name-wrapper">
-                  <span class="plugin-author">${plugin.author}</span>
+                  <span class="plugin-author">${utils.escapeHtml(plugin.author)}</span>
                   <span class="plugin-author-separator">/</span>
-                  <span class="plugin-name">${plugin.name}</span>
+                  <span class="plugin-name">${utils.escapeHtml(plugin.name)}</span>
                   ${plugin.version ? `<span class="plugin-update-badge">+1</span>` : ''}
                 </div>
-                <div class="plugin-version">${plugin.category || t('store.category.all')}</div>
+                <div class="plugin-version">${utils.escapeHtml(plugin.category) || t('store.category.all')}</div>
               </div>
             </div>
-            <p class="plugin-description">${plugin.description || t('msg.empty')}</p>
+            <p class="plugin-description">${utils.escapeHtml(plugin.description) || t('msg.empty')}</p>
             <div class="plugin-stats">
               <span class="plugin-stat">
                 <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,22 +227,22 @@
         container.innerHTML = creators.map(creator => `
           <div class="creator-card">
             <div class="creator-header">
-              <img src="https://avatars.githubusercontent.com/u/${creator.author_github_id || 0}?v=4" 
-                   alt="${creator.author}" class="creator-avatar">
+              <img src="https://avatars.githubusercontent.com/u/${encodeURIComponent(creator.author_github_id || 0)}?v=4"
+                   alt="${utils.escapeHtml(creator.author)}" class="creator-avatar">
               <div class="creator-info">
-                <div class="creator-name">${creator.author}</div>
+                <div class="creator-name">${utils.escapeHtml(creator.author)}</div>
                 <div class="creator-plugins-count">${creator.plugins.length} ${t('detail.author.plugins')}</div>
               </div>
             </div>
             <div class="creator-plugins">
               ${creator.plugins.slice(0, 3).map(plugin => `
-                <div class="plugin-card" onclick="window.location.href='plugin-detail.html?id=${plugin.id}'" style="margin-bottom: 0;">
+                <div class="plugin-card" onclick="window.location.href='plugin-detail.html?id=${encodeURIComponent(plugin.id)}'" style="margin-bottom: 0;">
                   <div class="plugin-name-wrapper" style="margin-bottom: 0.5rem;">
-                    <span class="plugin-name" style="font-size: 0.875rem;">${plugin.name}</span>
+                    <span class="plugin-name" style="font-size: 0.875rem;">${utils.escapeHtml(plugin.name)}</span>
                   </div>
-                  <p class="plugin-description" style="font-size: 0.75rem; margin-bottom: 0.5rem;">${plugin.description || t('msg.empty')}</p>
+                  <p class="plugin-description" style="font-size: 0.75rem; margin-bottom: 0.5rem;">${utils.escapeHtml(plugin.description) || t('msg.empty')}</p>
                   <div class="plugin-tags">
-                    <span class="badge badge-default" style="font-size: 0.625rem;">${plugin.category || t('store.category.all')}</span>
+                    <span class="badge badge-default" style="font-size: 0.625rem;">${utils.escapeHtml(plugin.category) || t('store.category.all')}</span>
                     ${plugin.github_data?.stars ? `
                       <span class="badge badge-default" style="font-size: 0.625rem;">
                         <svg style="width: 10px; height: 10px; display: inline;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

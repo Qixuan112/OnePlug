@@ -7,6 +7,7 @@
 from flask import Blueprint, request, jsonify, g
 
 from app.utils.decorators import jwt_required_custom, require_developer
+from app.utils.pagination import parse_pagination
 from app.services.developer_service import (
     submit_plugin,
     get_my_plugins,
@@ -56,16 +57,10 @@ def list_my_plugins():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-    
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
-    
+    page, limit, error = parse_pagination()
+    if error:
+        return error
+
     # 获取当前用户
     user = g.current_user
     

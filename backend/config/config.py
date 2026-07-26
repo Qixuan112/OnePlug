@@ -2,11 +2,16 @@ import os
 from datetime import timedelta
 
 
+# 仅供本地开发使用的占位密钥。生产环境若检测到这些值会直接拒绝启动。
+DEV_SECRET_KEY = 'dev-only-secret-key'
+DEV_JWT_SECRET_KEY = 'dev-only-jwt-secret'
+
+
 class Config:
     """基础配置类"""
-    
+
     # Flask 基础配置
-    SECRET_KEY = os.environ.get('SECRET_KEY') or os.environ.get('JWT_SECRET_KEY', 'dev-only-secret-key')
+    SECRET_KEY = os.environ.get('SECRET_KEY') or os.environ.get('JWT_SECRET_KEY', DEV_SECRET_KEY)
 
     # 数据库配置
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///dev.db')
@@ -18,7 +23,7 @@ class Config:
     }
     
     # JWT 配置
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'dev-only-jwt-secret')
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', DEV_JWT_SECRET_KEY)
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_TOKEN_LOCATION = ['headers']
@@ -38,7 +43,13 @@ class Config:
     # 分页配置
     DEFAULT_PAGE_SIZE = 20
     MAX_PAGE_SIZE = 100
-    
+
+    # 新用户首次通过 GitHub 登录时获得的角色
+    # 可选值: user, developer, reviewer, admin
+    # 默认 developer —— 本站定位是插件市场，登录即可提交插件
+    DEFAULT_USER_ROLE = os.environ.get('DEFAULT_USER_ROLE', 'developer')
+
+
     # 头像缓存配置
     # GitHub 头像国内镜像，可选值:
     # - 'github' (原始 GitHub)
@@ -57,6 +68,11 @@ class Config:
     # /api/plugins/all 接口的 HTTP Cache-Control max-age
     # 默认 600 秒（10 分钟）
     PLUGIN_LIST_CACHE_MAX_AGE = int(os.environ.get('PLUGIN_LIST_CACHE_MAX_AGE', '600'))
+
+    @classmethod
+    def validate(cls) -> None:
+        """启动前的配置自检，默认不做任何检查"""
+        return None
 
 
 class DevelopmentConfig(Config):
@@ -88,9 +104,39 @@ class ProductionConfig(Config):
     
     # 生产环境日志
     LOG_LEVEL = 'WARNING'
-    
+
     # 生产环境 CORS（限制来源）
-    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '').split(',')
+    CORS_ORIGINS = [
+        origin.strip()
+        for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
+        if origin.strip()
+    ]
+
+    @classmethod
+    def validate(cls) -> None:
+        """
+        生产环境启动自检
+
+        缺失密钥时宁可启动失败，也不要用公开的占位值签发 JWT ——
+        否则任何知道占位值的人都能伪造 admin token。
+        """
+        errors = []
+
+        if not os.environ.get('JWT_SECRET_KEY'):
+            errors.append('JWT_SECRET_KEY is not set')
+        elif cls.JWT_SECRET_KEY in (DEV_JWT_SECRET_KEY, DEV_SECRET_KEY):
+            errors.append('JWT_SECRET_KEY is using the insecure development placeholder')
+
+        if cls.SECRET_KEY in (DEV_JWT_SECRET_KEY, DEV_SECRET_KEY):
+            errors.append('SECRET_KEY is using the insecure development placeholder')
+
+        if not os.environ.get('DATABASE_URL'):
+            errors.append('DATABASE_URL is not set')
+
+        if errors:
+            raise RuntimeError(
+                'Invalid production configuration:\n  - ' + '\n  - '.join(errors)
+            )
 
 
 class TestingConfig(Config):
@@ -101,6 +147,10 @@ class TestingConfig(Config):
     
     # 测试环境使用 SQLite 内存数据库
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+
+    # 内存 SQLite 用 StaticPool，不接受 pool_size 等连接池参数，
+    # 继承基类的配置会让 create_engine 直接抛 TypeError
+    SQLALCHEMY_ENGINE_OPTIONS = {}
     
     # 测试环境 JWT 配置
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=5)

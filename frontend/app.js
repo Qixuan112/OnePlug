@@ -241,6 +241,94 @@ const auth = {
  */
 const utils = {
   /**
+   * HTML 转义
+   *
+   * 插件名称、描述、manifest 字段等都来自开发者仓库里的 manifest.json，
+   * 属于不可信输入。任何要拼进 innerHTML 的此类文本都必须先过这里。
+   *
+   * @param {*} value - 待转义的值
+   * @returns {string} 转义后的字符串
+   */
+  escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  },
+
+  /**
+   * 校验并返回安全的链接地址
+   *
+   * 只放行 http/https，挡掉 javascript: / data: 等伪协议。
+   *
+   * @param {string} url - 原始地址
+   * @param {string} fallback - 不合法时的回退值
+   * @returns {string} 可安全放进 href 的地址（已转义）
+   */
+  safeUrl(url, fallback = '#') {
+    if (!url) return fallback;
+    try {
+      const parsed = new URL(url, window.location.origin);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        return fallback;
+      }
+      return this.escapeHtml(parsed.href);
+    } catch (e) {
+      return fallback;
+    }
+  },
+
+  /**
+   * 校验并返回安全的图片地址
+   *
+   * 与 safeUrl 的区别：额外放行 data:image/*，因为
+   * /api/avatar/proxy 返回的缓存头像就是 data URI。
+   *
+   * @param {string} url - 原始地址
+   * @param {string} fallback - 不合法时的回退值
+   * @returns {string} 可安全放进 img src 的地址（已转义）
+   */
+  safeImageSrc(url, fallback = '') {
+    if (!url) return fallback;
+
+    // data:image/xxx;base64,... —— 只允许图片类型，挡掉 data:text/html
+    if (/^data:image\/(png|jpe?g|gif|webp|avif);base64,[a-z0-9+/=]+$/i.test(url)) {
+      return this.escapeHtml(url);
+    }
+
+    return this.safeUrl(url, fallback);
+  },
+
+  /**
+   * 把 Markdown 渲染为经过消毒的 HTML
+   *
+   * README 来自任意 GitHub 仓库，Markdown 允许内嵌原始 HTML，
+   * 不消毒直接 innerHTML 会造成存储型 XSS（审核员打开待审插件即中招）。
+   *
+   * @param {string} markdown - Markdown 源文本
+   * @returns {string} 可安全插入 DOM 的 HTML
+   */
+  renderMarkdown(markdown) {
+    if (!markdown) return '';
+
+    // 依赖缺失时降级为纯文本，绝不回退到未消毒的 HTML
+    if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
+      console.error('marked / DOMPurify not loaded, falling back to plain text');
+      return `<pre style="white-space: pre-wrap;">${this.escapeHtml(markdown)}</pre>`;
+    }
+
+    return DOMPurify.sanitize(marked.parse(markdown), {
+      USE_PROFILES: { html: true },
+      FORBID_TAGS: ['style', 'form', 'input', 'button'],
+      FORBID_ATTR: ['style', 'srcset', 'formaction'],
+      ADD_ATTR: ['target', 'rel']
+    });
+  },
+
+  /**
    * 格式化日期
    */
   formatDate(dateString) {
@@ -482,8 +570,8 @@ function updateUserUI() {
       container.innerHTML = `
         <div class="flex items-center gap-2">
           ${navButtons}
-          <img src="${user.avatar || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${user.username}" class="w-5 h-5 rounded-full">
-          <span class="text-sm">${user.username}</span>
+          <img src="${utils.safeImageSrc(user.avatar, 'https://avatars.githubusercontent.com/u/0?v=4')}" alt="${utils.escapeHtml(user.username)}" class="w-5 h-5 rounded-full">
+          <span class="text-sm">${utils.escapeHtml(user.username)}</span>
           <button class="btn btn-ghost btn-sm" onclick="auth.logout(); window.location.href='/'">退出</button>
         </div>
       `;

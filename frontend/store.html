@@ -221,20 +221,20 @@
           <div class="plugin-card">
             <div class="plugin-header">
               <a href="author.html?name=${encodeURIComponent(plugin.author)}" class="plugin-author-link" onclick="event.stopPropagation();">
-                <img src="${plugin.github_data?.owner?.avatar_url || `https://avatars.githubusercontent.com/u/${plugin.author_github_id || 0}?v=4`}" 
-                     alt="${plugin.author}" class="plugin-avatar"
+                <img src="${utils.safeImageSrc(plugin.github_data?.owner?.avatar_url, `https://avatars.githubusercontent.com/u/${encodeURIComponent(plugin.author_github_id || 0)}?v=4`)}"
+                     alt="${utils.escapeHtml(plugin.author)}" class="plugin-avatar"
                      onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(plugin.author || "?")}&background=e5e7eb&color=6b7280&size=40'">
               </a>
               <div class="plugin-info">
                 <div class="plugin-name-wrapper">
-                  <a href="author.html?name=${encodeURIComponent(plugin.author)}" class="plugin-author" onclick="event.stopPropagation();">${plugin.author}</a>
+                  <a href="author.html?name=${encodeURIComponent(plugin.author)}" class="plugin-author" onclick="event.stopPropagation();">${utils.escapeHtml(plugin.author)}</a>
                   <span class="plugin-author-separator">/</span>
-                  <a href="plugin-detail.html?id=${plugin.id}" class="plugin-name">${plugin.name}</a>
+                  <a href="plugin-detail.html?id=${encodeURIComponent(plugin.id)}" class="plugin-name">${utils.escapeHtml(plugin.name)}</a>
                   ${plugin.version ? `<span class="plugin-update-badge">+1</span>` : ''}
                 </div>
               </div>
             </div>
-            <p class="plugin-description">${plugin.description || t('msg.empty')}</p>
+            <p class="plugin-description">${utils.escapeHtml(plugin.description) || t('msg.empty')}</p>
             <div class="plugin-stats">
               <span class="plugin-stat">
                 <svg style="width: 16px; height: 16px;" fill="currentColor" viewBox="0 0 20 20">
@@ -250,9 +250,9 @@
               </span>
             </div>
             <div class="plugin-tags">
-              <span class="badge badge-default">${plugin.category || t('store.category.all')}</span>
+              <span class="badge badge-default">${utils.escapeHtml(plugin.category) || t('store.category.all')}</span>
             </div>
-            <a href="plugin-detail.html?id=${plugin.id}" class="plugin-card-link"></a>
+            <a href="plugin-detail.html?id=${encodeURIComponent(plugin.id)}" class="plugin-card-link"></a>
           </div>
         `).join('');
 

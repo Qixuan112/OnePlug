@@ -4,13 +4,13 @@
 提供插件相关的业务逻辑，包括获取插件列表、详情和 GitHub 数据
 """
 
-import re
 import requests
 from typing import Optional
 from sqlalchemy import desc, asc, or_
 
 from app import db
 from app.models.plugin import Plugin, PluginStatus
+from app.utils.github import parse_github_repo_url
 
 
 def get_plugins(
@@ -129,30 +129,8 @@ def get_plugin_by_id_for_reviewer(plugin_id: int) -> Optional[Plugin]:
     ).first()
 
 
-def _parse_github_repo_url(repo_url: str) -> Optional[tuple[str, str]]:
-    """
-    解析 GitHub 仓库 URL，提取 owner 和 repo
-    
-    Args:
-        repo_url: GitHub 仓库 URL
-    
-    Returns:
-        (owner, repo) 元组或 None
-    """
-    # 支持多种 GitHub URL 格式
-    patterns = [
-        r'github\.com/([^/]+)/([^/]+)/?',
-        r'github\.com/([^/]+)/([^/]+)\.git',
-    ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, repo_url)
-        if match:
-            owner = match.group(1)
-            repo = match.group(2).replace('.git', '')
-            return (owner, repo)
-    
-    return None
+# 解析统一走 app.utils.github，见该模块的说明
+_parse_github_repo_url = parse_github_repo_url
 
 
 def fetch_github_readme(repo_url: str) -> Optional[str]:
@@ -320,18 +298,17 @@ def update_plugin_manifest(plugin_id: int) -> bool:
             return False
         
         # 解析 GitHub URL
-        from urllib.parse import urlparse
         import base64
         import json
         import requests
-        
-        parsed_url = urlparse(plugin.repo_url)
-        path_parts = parsed_url.path.strip('/').split('/')
-        if len(path_parts) < 2:
+
+        repo_info = _parse_github_repo_url(plugin.repo_url)
+        if not repo_info:
             return False
-        
-        owner, repo = path_parts[0], path_parts[1]
-        
+
+        owner, repo = repo_info
+
+
         # 获取 manifest.json
         manifest_url = f'https://api.github.com/repos/{owner}/{repo}/contents/manifest.json'
         token = os.environ.get('GITHUB_API_TOKEN')

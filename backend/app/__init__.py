@@ -29,11 +29,19 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
 
-    app = Flask(__name__)
-    app.config.from_object(config[config_name])
+    config_class = config[config_name]
 
-    print(f"[DEBUG] config_name={config_name}, DB={config[config_name].SQLALCHEMY_DATABASE_URI}, FLASK_ENV={os.environ.get('FLASK_ENV')}")
-    
+    # 启动自检：生产环境缺少密钥时直接失败，而不是回退到开发占位值
+    config_class.validate()
+
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    # 只打印数据库方言，避免把带密码的连接串写进日志
+    db_dialect = (config_class.SQLALCHEMY_DATABASE_URI or '').split('://')[0]
+    print(f"[INIT] config_name={config_name}, db_dialect={db_dialect or 'unknown'}")
+
+
     # 将前端目录存储在 app.config 中
     app.config['FRONTEND_DIR'] = FRONTEND_DIR
     

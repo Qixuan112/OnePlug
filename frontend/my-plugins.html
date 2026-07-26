@@ -152,15 +152,15 @@
           <div class="plugin-list">
             ${plugins.map(plugin => `
               <div class="plugin-item" style="display: flex; align-items: start; padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 1rem;">
-                <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" style="width: 48px; height: 48px; border-radius: 50%; margin-right: 1rem;">
+                <img src="${utils.safeImageSrc(plugin.github_data?.owner?.avatar_url, 'https://avatars.githubusercontent.com/u/0?v=4')}" alt="${utils.escapeHtml(plugin.author)}" style="width: 48px; height: 48px; border-radius: 50%; margin-right: 1rem;">
                 <div style="flex: 1;">
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                    <h3 style="margin: 0; font-size: 1.125rem;">${plugin.name}</h3>
+                    <h3 style="margin: 0; font-size: 1.125rem;">${utils.escapeHtml(plugin.name)}</h3>
                     <span class="badge badge-${getStatusClass(plugin.status)}">${getStatusLabel(plugin.status)}</span>
                   </div>
-                  <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">${plugin.description || t('msg.empty')}</p>
+                  <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">${utils.escapeHtml(plugin.description) || t('msg.empty')}</p>
                   <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; color: var(--text-secondary);">
-                    <span>${t('plugin.version')}: v${plugin.version || 'unknown'}</span>
+                    <span>${t('plugin.version')}: v${utils.escapeHtml(plugin.version) || 'unknown'}</span>
                     <span style="display: flex; align-items: center; gap: 0.25rem;">
                       <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
@@ -177,11 +177,11 @@
                   </div>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
-                  <a href="${plugin.repo_url}" target="_blank" class="btn btn-ghost btn-sm" data-i18n="action.viewRepo">${t('action.viewRepo')}</a>
+                  <a href="${utils.safeUrl(plugin.repo_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" data-i18n="action.viewRepo">${t('action.viewRepo')}</a>
                   ${plugin.status === 'pending' ? `
-                    <button class="btn btn-error btn-sm" onclick="withdrawPlugin(${plugin.id}, '${plugin.name}')" data-i18n="action.withdraw">${t('action.withdraw')}</button>
+                    <button class="btn btn-error btn-sm" data-plugin-id="${plugin.id}" data-plugin-name="${utils.escapeHtml(plugin.name)}" onclick="withdrawPlugin(this.dataset.pluginId, this.dataset.pluginName)" data-i18n="action.withdraw">${t('action.withdraw')}</button>
                   ` : plugin.status === 'approved' ? `
-                    <button class="btn btn-error btn-sm" onclick="unpublishPlugin(${plugin.id}, '${plugin.name}')" data-i18n="action.unpublish">${t('action.unpublish')}</button>
+                    <button class="btn btn-error btn-sm" data-plugin-id="${plugin.id}" data-plugin-name="${utils.escapeHtml(plugin.name)}" onclick="unpublishPlugin(this.dataset.pluginId, this.dataset.pluginName)" data-i18n="action.unpublish">${t('action.unpublish')}</button>
                   ` : ''}
                 </div>
               </div>

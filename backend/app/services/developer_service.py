@@ -5,7 +5,6 @@
 """
 
 import os
-import re
 import json
 import base64
 import requests
@@ -17,6 +16,7 @@ from app import db
 from app.models.plugin import Plugin, PluginStatus
 from app.models.audit_log import AuditLog, AuditAction, ResourceType
 from app.services.plugin_service import fetch_github_stats
+from app.utils.github import parse_github_repo_url, normalize_repo_url
 
 
 # 从环境变量获取 GitHub API Token
@@ -46,41 +46,9 @@ def _fetch_manifest_from_github(repo_url):
         return None
 
 
-def _normalize_repo_url(repo_url):
-    """规范化 GitHub repo URL 用于去重比对(忽略大小写/.git/末尾斜杠)。"""
-    if not repo_url:
-        return ''
-    repo_info = _parse_github_repo_url(repo_url)
-    if not repo_info:
-        return repo_url.strip().lower().rstrip('/')
-    owner, repo = repo_info
-    return f'https://github.com/{owner.lower()}/{repo.lower()}'
-
-
-
-def _parse_github_repo_url(repo_url: str) -> Optional[tuple[str, str]]:
-    """
-    解析 GitHub 仓库 URL，提取 owner 和 repo
-    
-    Args:
-        repo_url: GitHub 仓库 URL
-    
-    Returns:
-        (owner, repo) 元组或 None
-    """
-    patterns = [
-        r'github\.com/([^/]+)/([^/]+)/?',
-        r'github\.com/([^/]+)/([^/]+)\.git',
-    ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, repo_url)
-        if match:
-            owner = match.group(1)
-            repo = match.group(2).replace('.git', '')
-            return (owner, repo)
-    
-    return None
+# 解析 / 规范化统一走 app.utils.github，见该模块的说明
+_parse_github_repo_url = parse_github_repo_url
+_normalize_repo_url = normalize_repo_url
 
 
 def validate_github_repo(repo_url: str, github_token: str = None) -> tuple[bool, Optional[dict]]:

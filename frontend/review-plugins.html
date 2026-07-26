@@ -245,23 +245,23 @@
           <div class="plugin-list">
             ${plugins.map(plugin => `
               <div class="plugin-item" style="display: flex; align-items: start; padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 1rem;">
-                <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" style="width: 48px; height: 48px; border-radius: 50%; margin-right: 1rem;">
+                <img src="${utils.safeImageSrc(plugin.github_data?.owner?.avatar_url, 'https://avatars.githubusercontent.com/u/0?v=4')}" alt="${utils.escapeHtml(plugin.author)}" style="width: 48px; height: 48px; border-radius: 50%; margin-right: 1rem;">
                 <div style="flex: 1;">
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                    <h3 style="margin: 0; font-size: 1.125rem;">${plugin.name}</h3>
+                    <h3 style="margin: 0; font-size: 1.125rem;">${utils.escapeHtml(plugin.name)}</h3>
                     <span class="badge badge-warning">${i18n.t('review.pendingBadge') || '待审核'}</span>
                   </div>
-                  <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">${plugin.description || (i18n.t('plugin.noDescription') || '暂无描述')}</p>
+                  <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">${utils.escapeHtml(plugin.description) || (i18n.t('plugin.noDescription') || '暂无描述')}</p>
                   <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; color: var(--text-secondary);">
-                    <span>${i18n.t('plugin.author') || '作者'}: ${plugin.author}</span>
-                    <span>${i18n.t('plugin.category') || '分类'}: ${plugin.category || (i18n.t('plugin.uncategorized') || '未分类')}</span>
-                    <span>${i18n.t('plugin.version') || '版本'}: ${plugin.version || 'unknown'}</span>
+                    <span>${i18n.t('plugin.author') || '作者'}: ${utils.escapeHtml(plugin.author)}</span>
+                    <span>${i18n.t('plugin.category') || '分类'}: ${utils.escapeHtml(plugin.category) || (i18n.t('plugin.uncategorized') || '未分类')}</span>
+                    <span>${i18n.t('plugin.version') || '版本'}: ${utils.escapeHtml(plugin.version) || 'unknown'}</span>
                     <span>${i18n.t('plugin.submitted') || '提交'}: ${utils.formatDate(plugin.created_at)}</span>
                   </div>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                   <button class="btn btn-primary btn-sm" onclick="openReviewModal(${plugin.id})">${i18n.t('review.review') || '审核'}</button>
-                  <a href="${plugin.repo_url}" target="_blank" class="btn btn-ghost btn-sm">${i18n.t('plugin.viewRepo') || '查看仓库'}</a>
+                  <a href="${utils.safeUrl(plugin.repo_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">${i18n.t('plugin.viewRepo') || '查看仓库'}</a>
                 </div>
               </div>
             `).join('')}
@@ -341,28 +341,28 @@
         modalBody.innerHTML = `
           <div style="margin-bottom: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-              <img src="${plugin.github_data?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/0?v=4'}" alt="${plugin.author}" style="width: 64px; height: 64px; border-radius: 50%;">
+              <img src="${utils.safeImageSrc(plugin.github_data?.owner?.avatar_url, 'https://avatars.githubusercontent.com/u/0?v=4')}" alt="${utils.escapeHtml(plugin.author)}" style="width: 64px; height: 64px; border-radius: 50%;">
               <div>
-                <h2 style="margin: 0;">${plugin.name}</h2>
-                <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary);">${i18n.t('plugin.by') || 'by'} ${plugin.author}</p>
+                <h2 style="margin: 0;">${utils.escapeHtml(plugin.name)}</h2>
+                <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary);">${i18n.t('plugin.by') || 'by'} ${utils.escapeHtml(plugin.author)}</p>
               </div>
             </div>
-            <p style="color: var(--text-secondary);">${plugin.description || (i18n.t('plugin.noDescription') || '暂无描述')}</p>
+            <p style="color: var(--text-secondary);">${utils.escapeHtml(plugin.description) || (i18n.t('plugin.noDescription') || '暂无描述')}</p>
           </div>
 
           <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
             <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem;">${i18n.t('review.repoInfo') || '仓库信息'}</h4>
             <div style="font-size: 0.875rem; color: var(--text-secondary);">
-              <p style="margin: 0.25rem 0;"><strong>${i18n.t('review.repoUrl') || '仓库地址:'}</strong> <a href="${plugin.repo_url}" target="_blank">${plugin.repo_url}</a></p>
-              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.category') || '分类:'}</strong> ${plugin.category || (i18n.t('plugin.uncategorized') || '未分类')}</p>
-              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.version') || '版本:'}</strong> ${plugin.version || 'unknown'}</p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('review.repoUrl') || '仓库地址:'}</strong> <a href="${utils.safeUrl(plugin.repo_url)}" target="_blank" rel="noopener noreferrer">${utils.escapeHtml(plugin.repo_url)}</a></p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.category') || '分类:'}</strong> ${utils.escapeHtml(plugin.category) || (i18n.t('plugin.uncategorized') || '未分类')}</p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.version') || '版本:'}</strong> ${utils.escapeHtml(plugin.version) || 'unknown'}</p>
             </div>
           </div>
 
           ${plugin.manifest ? `
             <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
               <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem;">Manifest ${i18n.t('review.info') || '信息'}</h4>
-              <pre style="margin: 0; font-size: 0.75rem; overflow-x: auto;"><code>${JSON.stringify(plugin.manifest, null, 2)}</code></pre>
+              <pre style="margin: 0; font-size: 0.75rem; overflow-x: auto;"><code>${utils.escapeHtml(JSON.stringify(plugin.manifest, null, 2))}</code></pre>
             </div>
           ` : ''}
 
@@ -371,7 +371,7 @@
             <div style="font-size: 0.875rem; color: var(--text-secondary);">
               <p style="margin: 0.25rem 0;"><strong>Stars:</strong> ${plugin.github_data?.stargazers_count || 0}</p>
               <p style="margin: 0.25rem 0;"><strong>Forks:</strong> ${plugin.github_data?.forks_count || 0}</p>
-              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.language') || 'Language:'}</strong> ${plugin.github_data?.language || 'Unknown'}</p>
+              <p style="margin: 0.25rem 0;"><strong>${i18n.t('plugin.language') || 'Language:'}</strong> ${utils.escapeHtml(plugin.github_data?.language) || 'Unknown'}</p>
             </div>
           </div>
         `;

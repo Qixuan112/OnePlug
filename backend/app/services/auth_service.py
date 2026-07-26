@@ -7,6 +7,7 @@
 import os
 import requests
 from datetime import datetime, timezone
+from flask import current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, decode_token
 from jwt import ExpiredSignatureError, InvalidTokenError
 
@@ -137,12 +138,19 @@ def create_or_update_user(github_user):
         user.updated_at = datetime.now(timezone.utc)
     else:
         # 创建新用户
+        # 首次登录授予的角色由 DEFAULT_USER_ROLE 决定（默认 developer，
+        # 即任何 GitHub 账号登录后即可提交插件）
+        try:
+            default_role = UserRole(current_app.config.get('DEFAULT_USER_ROLE', 'developer'))
+        except ValueError:
+            default_role = UserRole.developer
+
         user = User(
             github_id=github_id,
             username=username,
             email=email,
             avatar=avatar,
-            role=UserRole.developer
+            role=default_role
         )
         db.session.add(user)
     
@@ -201,16 +209,26 @@ def refresh_access_token(refresh_token):
     try:
         # 解码 refresh_token 获取用户信息
         decoded = decode_token(refresh_token)
+
+        # 必须真的是 refresh token：否则一个泄露的 access_token
+        # 就能被无限换新，短过期时间形同虚设
+        if decoded.get('type') != 'refresh':
+            return {'error': 'Invalid refresh token: wrong token type'}
+
         user_id = decoded.get('user_id')
-        
+
         if not user_id:
             return {'error': 'Invalid refresh token: user_id not found'}
-        
+
         # 验证用户是否存在
         user = User.query.get(user_id)
         if not user:
             return {'error': 'User not found'}
-        
+
+        # 被禁用的账号不再发放新 token
+        if not user.is_active:
+            return {'error': 'Account disabled'}
+
         # 生成新的 tokens
         tokens = generate_tokens(user)
         

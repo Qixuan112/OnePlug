@@ -109,11 +109,11 @@
           return `
             <div class="creator-card">
               <a href="author.html?name=${encodeURIComponent(dev.username)}" class="creator-header" style="text-decoration: none; color: inherit;">
-                <img src="${avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dev.username)}&background=e5e7eb&color=6b7280&size=80`}" 
-                     alt="${dev.username}" class="creator-avatar" style="width: 64px; height: 64px;"
+                <img src="${utils.safeImageSrc(avatarUrl, `https://ui-avatars.com/api/?name=${encodeURIComponent(dev.username)}&background=e5e7eb&color=6b7280&size=80`)}"
+                     alt="${utils.escapeHtml(dev.username)}" class="creator-avatar" style="width: 64px; height: 64px;"
                      onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(dev.username)}&background=e5e7eb&color=6b7280&size=80'">
                 <div class="creator-info">
-                  <div class="creator-name">${dev.username}</div>
+                  <div class="creator-name">${utils.escapeHtml(dev.username)}</div>
                   <div class="creator-plugins-count">${dev.plugin_count || 0} ${t('detail.author.plugins')}</div>
                 </div>
               </a>

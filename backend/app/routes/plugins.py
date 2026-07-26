@@ -14,6 +14,7 @@ from app.services.plugin_service import (
     get_all_plugins
 )
 from app.services.developer_service import validate_github_repo
+from app.utils.pagination import parse_pagination
 
 bp = Blueprint('plugins', __name__)
 
@@ -55,16 +56,10 @@ def list_plugins():
         }
     """
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-    
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
-    
+    page, limit, error = parse_pagination()
+    if error:
+        return error
+
     search = request.args.get('search', None)
     category = request.args.get('category', None)
     sort_by = request.args.get('sortBy', None)
@@ -329,16 +324,10 @@ def list_developers():
     from sqlalchemy import func
     
     # 获取查询参数
-    try:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
-    except ValueError:
-        return jsonify({'error': 'Invalid page or limit parameter'}), 400
-    
-    # 限制每页最大数量
-    if limit > 100:
-        limit = 100
-    
+    page, limit, error = parse_pagination()
+    if error:
+        return error
+
     # 查询有提交过插件的开发者
     # 使用子查询获取每个用户的插件数量和总 stars
     subquery = db.session.query(
