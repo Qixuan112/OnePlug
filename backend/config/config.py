@@ -31,7 +31,7 @@ class Config:
     JWT_HEADER_TYPE = 'Bearer'
     
     # CORS 配置
-    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*').split(',')
+    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5000').split(',')
     
     # 应用配置
     DEBUG = False
@@ -132,6 +132,11 @@ class ProductionConfig(Config):
 
         if not os.environ.get('DATABASE_URL'):
             errors.append('DATABASE_URL is not set')
+
+        # 检查 CORS 配置
+        cors_origins = os.environ.get('CORS_ORIGINS', '')
+        if '*' in cors_origins:
+            errors.append("CORS_ORIGINS cannot use wildcard '*' in production")
 
         if errors:
             raise RuntimeError(
