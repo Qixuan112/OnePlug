@@ -37,17 +37,20 @@ class Plugin(db.Model):
     category_id: Mapped[int | None] = mapped_column(
         Integer,
         ForeignKey('categories.id', ondelete='SET NULL'),
-        nullable=True
+        nullable=True,
+        index=True
     )
     author_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey('users.id', ondelete='CASCADE'),
-        nullable=False
+        nullable=False,
+        index=True
     )
     status: Mapped[PluginStatus] = mapped_column(
         Enum(PluginStatus, name='plugin_status_enum', native_enum=False),
         default=PluginStatus.draft,
-        nullable=False
+        nullable=False,
+        index=True
     )
     manifest: Mapped[dict[str, Any] | None] = mapped_column(
         JSON,
@@ -87,7 +90,12 @@ class Plugin(db.Model):
         lazy='dynamic',
         cascade='all, delete-orphan'
     )
-    
+
+    # 表级约束和索引
+    __table_args__ = (
+        Index('idx_plugin_status_updated', 'status', 'updated_at'),
+    )
+
     def __repr__(self) -> str:
         return f'<Plugin {self.name} ({self.status.value})>'
     

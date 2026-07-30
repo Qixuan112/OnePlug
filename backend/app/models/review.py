@@ -30,12 +30,14 @@ class Review(db.Model):
     plugin_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey('plugins.id', ondelete='CASCADE'),
-        nullable=False
+        nullable=False,
+        index=True
     )
     reviewer_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey('users.id', ondelete='CASCADE'),
-        nullable=False
+        nullable=False,
+        index=True
     )
     action: Mapped[ReviewAction] = mapped_column(
         Enum(ReviewAction, name='review_action_enum', native_enum=False),
@@ -45,7 +47,8 @@ class Review(db.Model):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
-        nullable=False
+        nullable=False,
+        index=True
     )
     
     # 关系定义
