@@ -16,6 +16,13 @@ from app.utils.github import parse_github_repo_url
 logger = logging.getLogger(__name__)
 
 
+def _escape_like_pattern(s):
+    """转义 LIKE 查询中的通配符"""
+    if not s:
+        return s
+    return s.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+
+
 def get_plugins(
     page: int = 1,
     limit: int = 20,
@@ -46,7 +53,8 @@ def get_plugins(
     
     # 搜索过滤
     if search:
-        search_pattern = f'%{search}%'
+        search_escaped = _escape_like_pattern(search)
+        search_pattern = f'%{search_escaped}%'
         query = query.filter(
             or_(
                 Plugin.name.ilike(search_pattern),
