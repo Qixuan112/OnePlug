@@ -150,7 +150,11 @@
         return;
       }
 
-      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}`;
+      // 生成并存储 state 参数
+      const state = crypto.randomUUID();
+      sessionStorage.setItem('oauth_state', state);
+
+      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}&state=${state}`;
       console.log('[OAuth Debug]', {
         clientId: GITHUB_CLIENT_ID,
         redirectUri: decodeURIComponent(redirectUri),
