@@ -48,8 +48,20 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_reviews_reviewer_id'), ['reviewer_id'], unique=False)
 
     with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('is_active', sa.Boolean(), nullable=False))
+        batch_op.add_column(
+            sa.Column(
+                'is_active',
+                sa.Boolean(),
+                nullable=False,
+                server_default=sa.true(),
+            )
+        )
         batch_op.create_index(batch_op.f('ix_users_is_active'), ['is_active'], unique=False)
+        batch_op.alter_column(
+            'is_active',
+            existing_type=sa.Boolean(),
+            server_default=None,
+        )
 
     # ### end Alembic commands ###
 
