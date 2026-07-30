@@ -338,4 +338,4 @@ def list_developers():
     except Exception as e:
         import logging
         logging.error(f"Error fetching developers: {e}", exc_info=True)
-        return jsonify({'error': 'Internal server error'}), 500, 200
+        return jsonify({'error': 'Internal server error'}), 500
