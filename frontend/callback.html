@@ -85,18 +85,28 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
+      const state = urlParams.get('state');
       const error = urlParams.get('error');
-      
+
+      // 验证 state 参数
+      const savedState = sessionStorage.getItem('oauth_state');
+      sessionStorage.removeItem('oauth_state'); // 立即清除
+
+      if (!state || !savedState || state !== savedState) {
+        showError(i18n.t('callback.error.invalidState') || 'Invalid state parameter - possible CSRF attack');
+        return;
+      }
+
       if (error) {
         showError(i18n.t('callback.error.githubDenied', { error }));
         return;
       }
-      
+
       if (!code) {
         showError(i18n.t('callback.error.noAuthCode'));
         return;
       }
-      
+
       try {
         // 调用后端 API 换取 token（20 秒超时）
         const controller = new AbortController();
@@ -107,7 +117,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ code, state }),
           signal: controller.signal
         });
         clearTimeout(timeoutId);

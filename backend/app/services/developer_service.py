@@ -8,6 +8,7 @@ import os
 import json
 import base64
 import requests
+import logging
 from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy import desc
@@ -17,6 +18,8 @@ from app.models.plugin import Plugin, PluginStatus
 from app.models.audit_log import AuditLog, AuditAction, ResourceType
 from app.services.plugin_service import fetch_github_stats
 from app.utils.github import parse_github_repo_url, normalize_repo_url
+
+logger = logging.getLogger(__name__)
 
 
 # 从环境变量获取 GitHub API Token
@@ -42,7 +45,7 @@ def _fetch_manifest_from_github(repo_url):
         manifest_content = base64.b64decode(content_b64).decode('utf-8')
         return json.loads(manifest_content)
     except Exception as e:
-        print(f"Failed to fetch/parse manifest for {repo_url}: {e}")
+        logger.error(f"Failed to fetch/parse manifest for {repo_url}: {e}")
         return None
 
 

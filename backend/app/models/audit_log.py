@@ -7,7 +7,7 @@ AuditLog 模型模块
 import enum
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import Integer, String, DateTime, Enum, ForeignKey, JSON
+from sqlalchemy import Integer, String, DateTime, Enum, ForeignKey, JSON, Index
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from app import db
@@ -46,7 +46,8 @@ class AuditLog(db.Model):
     user_id: Mapped[int | None] = mapped_column(
         Integer,
         ForeignKey('users.id', ondelete='SET NULL'),
-        nullable=True
+        nullable=True,
+        index=True
     )
     action: Mapped[AuditAction] = mapped_column(
         Enum(AuditAction, name='audit_action_enum', native_enum=False),
@@ -70,7 +71,8 @@ class AuditLog(db.Model):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
-        nullable=False
+        nullable=False,
+        index=True
     )
     
     # 关系定义
@@ -78,7 +80,12 @@ class AuditLog(db.Model):
         'User',
         back_populates='audit_logs'
     )
-    
+
+    # 表级约束和索引
+    __table_args__ = (
+        Index('idx_audit_resource', 'resource_type', 'resource_id', 'created_at'),
+    )
+
     def __repr__(self) -> str:
         return f'<AuditLog {self.action.value} on {self.resource_type}:{self.resource_id}>'
     

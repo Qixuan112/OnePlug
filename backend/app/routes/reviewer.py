@@ -6,6 +6,7 @@
 
 from flask import Blueprint, request, jsonify, g
 
+from app import limiter
 from app.utils.decorators import jwt_required_custom, require_reviewer
 from app.services.reviewer_service import (
     get_review_queue,
@@ -115,6 +116,7 @@ def get_plugin_detail_for_reviewer(plugin_id: int):
 @bp.route('/plugins/<int:plugin_id>/approve', methods=['POST'])
 @jwt_required_custom
 @require_reviewer
+@limiter.limit("50 per hour")
 def approve_plugin_endpoint(plugin_id: int):
     """
     通过插件接口
@@ -158,6 +160,7 @@ def approve_plugin_endpoint(plugin_id: int):
 @bp.route('/plugins/<int:plugin_id>/reject', methods=['POST'])
 @jwt_required_custom
 @require_reviewer
+@limiter.limit("50 per hour")
 def reject_plugin_endpoint(plugin_id: int):
     """
     驳回插件接口

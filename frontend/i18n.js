@@ -353,6 +353,7 @@ const translations = {
     'callback.error.noAuthCode': '未收到授权码',
     'callback.error.loginFailed': '登录失败',
     'callback.error.genericError': '登录过程中发生错误',
+    'callback.error.invalidState': '安全验证失败',
     
     // 贡献者页面
     'contributors.title': '开源贡献者',
@@ -844,6 +845,7 @@ const translations = {
     'callback.error.noAuthCode': 'No authorization code received',
     'callback.error.loginFailed': 'Login failed',
     'callback.error.genericError': 'An error occurred during login',
+    'callback.error.invalidState': 'Security validation failed',
     
     // Contributors Page
     'contributors.title': 'Open Source Contributors',
