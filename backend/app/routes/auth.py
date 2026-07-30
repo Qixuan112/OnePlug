@@ -82,6 +82,8 @@ def github_callback():
     # 建议未来改进：使用 Redis 或数据库存储生成的 state
 
     code = data.get('code')
+
+    # 原有代码继续...
     if not code:
         return jsonify({'error': 'code is required'}), 400
     

@@ -176,9 +176,10 @@ def get_all_plugins_json():
         
         return response, 200
     except Exception as e:
+        import logging
+        logging.error(f"Error in get_all_plugins: {e}", exc_info=True)
         return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
+            'error': 'Internal server error'
         }), 500
 
 
@@ -296,13 +297,13 @@ def validate_repo():
 def list_developers():
     """
     获取开发者列表接口
-    
+
     返回所有已登录的开发者（有提交过插件的用户）
-    
+
     Query Parameters:
         - page: 页码（默认1）
         - limit: 每页数量（默认20，最大100）
-    
+
     Response:
         {
             "items": [
@@ -319,62 +320,22 @@ def list_developers():
             "limit": 20
         }
     """
-    from app.models import User, Plugin
-    from app import db
-    from sqlalchemy import func
-    
+    from app.services.developer_service_helpers import get_developers_with_stats
+
     # 获取查询参数
     page, limit, error = parse_pagination()
     if error:
         return error
 
-    # 查询有提交过插件的开发者
-    # 使用子查询获取每个用户的插件数量和总 stars
-    subquery = db.session.query(
-        Plugin.author_id,
-        func.count(Plugin.id).label('plugin_count'),
-        func.coalesce(func.sum(
-            func.json_extract(Plugin.github_data, '$.stars')
-        ), 0).label('total_stars')
-    ).filter(
-        Plugin.status == 'approved'
-    ).group_by(
-        Plugin.author_id
-    ).subquery()
-    
-    # 主查询：获取用户信息
-    query = db.session.query(
-        User,
-        subquery.c.plugin_count,
-        subquery.c.total_stars
-    ).join(
-        subquery, User.id == subquery.c.author_id
-    ).filter(
-        User.role.in_(['developer', 'reviewer', 'admin'])
-    ).order_by(
-        subquery.c.plugin_count.desc()
-    )
-    
-    # 获取总数
-    total = query.count()
-    
-    # 分页
-    developers = query.offset((page - 1) * limit).limit(limit).all()
-    
-    # 构建响应数据
-    items = []
-    for user, plugin_count, total_stars in developers:
-        items.append({
-            'id': user.id,
-            'username': user.username,
-            'avatar_url': user.avatar,
-            'plugin_count': plugin_count,
-            'total_stars': int(total_stars) if total_stars else 0
-        })
-    
-    return jsonify({
-        'items': items,
-        'total': total,
-        'page': page,
-        'limit': limit
-    }), 200
+    try:
+        result = get_developers_with_stats(page, limit)
+        return jsonify({
+            'items': result['developers'],
+            'total': result['pagination']['total'],
+            'page': result['pagination']['page'],
+            'limit': result['pagination']['per_page']
+        }), 200
+    except Exception as e:
+        import logging
+        logging.error(f"Error fetching developers: {e}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500, 200
