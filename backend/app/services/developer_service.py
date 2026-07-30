@@ -4,7 +4,6 @@
 提供开发者相关的业务逻辑，包括插件提交、列表获取和撤回功能
 """
 
-import os
 import json
 import base64
 import requests
@@ -19,8 +18,10 @@ from app.services.plugin_service import fetch_github_stats
 from app.utils.github import parse_github_repo_url, normalize_repo_url
 
 
-# 从环境变量获取 GitHub API Token
-GITHUB_API_TOKEN = os.environ.get('GITHUB_API_TOKEN', '')
+def _get_github_token():
+    """获取 GitHub API Token，统一从 Flask 配置中读取"""
+    from flask import current_app
+    return current_app.config.get('GITHUB_API_TOKEN', '')
 
 
 def _fetch_manifest_from_github(repo_url):
@@ -31,8 +32,9 @@ def _fetch_manifest_from_github(repo_url):
     owner, repo = repo_info
     manifest_url = f'https://api.github.com/repos/{owner}/{repo}/contents/manifest.json'
     headers = {'Accept': 'application/vnd.github.v3+json'}
-    if GITHUB_API_TOKEN:
-        headers['Authorization'] = f'token {GITHUB_API_TOKEN}'
+    token = _get_github_token()
+    if token:
+        headers['Authorization'] = f'token {token}'
     try:
         response = requests.get(manifest_url, timeout=10, headers=headers)
         if response.status_code != 200:
@@ -54,25 +56,25 @@ _normalize_repo_url = normalize_repo_url
 def validate_github_repo(repo_url: str, github_token: str = None) -> tuple[bool, Optional[dict]]:
     """
     验证 GitHub 仓库是否存在且可访问
-    
+
     Args:
         repo_url: GitHub 仓库 URL
         github_token: GitHub Personal Access Token（可选，用于提高 API 限制）
-    
+
     Returns:
         (是否有效, 仓库信息或错误信息)
     """
     repo_info = _parse_github_repo_url(repo_url)
     if not repo_info:
         return False, {'error': 'Invalid GitHub repository URL format'}
-    
+
     owner, repo = repo_info
     api_url = f'https://api.github.com/repos/{owner}/{repo}'
-    
+
     # 构建请求头
     headers = {'Accept': 'application/vnd.github.v3+json'}
-    # 优先使用传入的 token，否则使用环境变量中的 token
-    token = github_token or GITHUB_API_TOKEN
+    # 优先使用传入的 token，否则从配置获取
+    token = github_token or _get_github_token()
     if token:
         headers['Authorization'] = f'token {token}'
     

@@ -292,11 +292,10 @@ def update_plugin_manifest(plugin_id: int) -> bool:
         是否更新成功
     """
     try:
-        import os
         plugin = db.session.query(Plugin).get(plugin_id)
         if not plugin or not plugin.repo_url:
             return False
-        
+
         # 解析 GitHub URL
         import base64
         import json
@@ -308,10 +307,12 @@ def update_plugin_manifest(plugin_id: int) -> bool:
 
         owner, repo = repo_info
 
+        # 获取 GitHub API Token 从 Flask 配置
+        from flask import current_app
+        token = current_app.config.get('GITHUB_API_TOKEN', '')
 
         # 获取 manifest.json
         manifest_url = f'https://api.github.com/repos/{owner}/{repo}/contents/manifest.json'
-        token = os.environ.get('GITHUB_API_TOKEN')
         headers = {'Authorization': f'token {token}'} if token else {}
         
         manifest_response = requests.get(manifest_url, timeout=10, headers=headers)

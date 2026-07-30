@@ -71,6 +71,10 @@ class Config:
     # 默认 600 秒（10 分钟）
     PLUGIN_LIST_CACHE_MAX_AGE = int(os.environ.get('PLUGIN_LIST_CACHE_MAX_AGE', '600'))
 
+    # GitHub API Token 配置
+    # 用于提高 GitHub API 请求限制，从环境变量获取
+    GITHUB_API_TOKEN = os.environ.get('GITHUB_API_TOKEN', '')
+
     @classmethod
     def validate(cls) -> None:
         """启动前的配置自检，默认不做任何检查"""
