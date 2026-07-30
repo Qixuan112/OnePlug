@@ -24,30 +24,6 @@ def _get_github_token():
     return current_app.config.get('GITHUB_API_TOKEN', '')
 
 
-def _fetch_manifest_from_github(repo_url):
-    """从 GitHub 仓库根目录抓 manifest.json 并解析为 dict。失败返回 None。"""
-    repo_info = _parse_github_repo_url(repo_url)
-    if not repo_info:
-        return None
-    owner, repo = repo_info
-    manifest_url = f'https://api.github.com/repos/{owner}/{repo}/contents/manifest.json'
-    headers = {'Accept': 'application/vnd.github.v3+json'}
-    token = _get_github_token()
-    if token:
-        headers['Authorization'] = f'token {token}'
-    try:
-        response = requests.get(manifest_url, timeout=10, headers=headers)
-        if response.status_code != 200:
-            return None
-        manifest_data = response.json()
-        content_b64 = manifest_data.get('content', '')
-        manifest_content = base64.b64decode(content_b64).decode('utf-8')
-        return json.loads(manifest_content)
-    except Exception as e:
-        print(f"Failed to fetch/parse manifest for {repo_url}: {e}")
-        return None
-
-
 # 解析 / 规范化统一走 app.utils.github，见该模块的说明
 _parse_github_repo_url = parse_github_repo_url
 _normalize_repo_url = normalize_repo_url
@@ -55,7 +31,10 @@ _normalize_repo_url = normalize_repo_url
 
 def validate_github_repo(repo_url: str, github_token: str = None) -> tuple[bool, Optional[dict]]:
     """
-    验证 GitHub 仓库是否存在且可访问
+    验证 GitHub 仓库是否存在且可访问，并获取 manifest.json
+
+    合并了原 validate_github_repo 和 _fetch_manifest_from_github 的功能，
+    避免重复请求 GitHub API。
 
     Args:
         repo_url: GitHub 仓库 URL
@@ -63,6 +42,7 @@ def validate_github_repo(repo_url: str, github_token: str = None) -> tuple[bool,
 
     Returns:
         (是否有效, 仓库信息或错误信息)
+        成功时返回的 dict 包含 'manifest' 字段，包含解析后的 manifest.json
     """
     repo_info = _parse_github_repo_url(repo_url)
     if not repo_info:
@@ -100,19 +80,19 @@ def validate_github_repo(repo_url: str, github_token: str = None) -> tuple[bool,
                 return False, {'error': 'Repository must contain a manifest.json file'}
             
             # 解析 manifest.json
+            manifest = None
             try:
                 manifest_data = manifest_response.json()
-                import base64
                 manifest_content = base64.b64decode(manifest_data.get('content', '')).decode('utf-8')
                 manifest = json.loads(manifest_content)
-                
+
                 # 使用 manifest 中的信息
                 plugin_name = manifest.get('display_name') or manifest.get('plugin_id') or repo
                 plugin_description = manifest.get('description') or data.get('description')
             except Exception:
                 plugin_name = repo
                 plugin_description = data.get('description')
-            
+
             return True, {
                 'owner': owner,
                 'repo': repo,
@@ -130,7 +110,8 @@ def validate_github_repo(repo_url: str, github_token: str = None) -> tuple[bool,
                 'owner': {
                     'avatar_url': data.get('owner', {}).get('avatar_url', ''),
                     'login': data.get('owner', {}).get('login', '')
-                }
+                },
+                'manifest': manifest  # 返回解析后的 manifest，避免重复请求
             }
         elif response.status_code == 404:
             return False, {'error': 'Repository not found'}
@@ -168,7 +149,8 @@ def submit_plugin(user_id: int, data: dict) -> tuple[bool, dict]:
     if not is_valid:
         return False, repo_info
 
-    manifest = _fetch_manifest_from_github(repo_url)
+    # validate_github_repo 已经获取了 manifest，直接从返回值中取出
+    manifest = repo_info.get('manifest')
     if not manifest:
         return False, {'error': 'Failed to read manifest.json from repository'}
 
