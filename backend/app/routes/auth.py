@@ -28,17 +28,19 @@ def get_oauth_config():
 
 
 @bp.route('/github/callback', methods=['POST'])
+@limiter.limit("10 per minute")
 def github_callback():
     """
     GitHub OAuth 回调端点
-    
-    接收 code，换取 GitHub access_token，创建/更新本地用户，返回 JWT tokens
-    
+
+    接收 code 和 state，换取 GitHub access_token，创建/更新本地用户，返回 JWT tokens
+
     Request Body:
         {
-            "code": "github_oauth_code"
+            "code": "github_oauth_code",
+            "state": "random_state_string"
         }
-    
+
     Response:
         {
             "access_token": "...",
@@ -55,10 +57,29 @@ def github_callback():
         }
     """
     data = request.get_json()
-    
+
     if not data:
         return jsonify({'error': 'Request body is required'}), 400
-    
+
+    # OAuth State 验证说明：
+    # 1. 前端使用 crypto.randomUUID() 生成 state 并存储在 sessionStorage
+    # 2. 后端进行格式验证（长度、类型）作为第一道防线
+    # 3. 完整的 CSRF 防护需要服务端 state 存储和验证
+    # 4. 建议改进：在用户发起 OAuth 时，后端生成 state 并存储在会话或 Redis 中
+
+    # 验证 state 参数
+    state = data.get('state')
+    if not state:
+        return jsonify({'error': 'Missing state parameter'}), 400
+
+    # 基本格式验证（UUID 格式）
+    if not isinstance(state, str) or len(state) < 16:
+        return jsonify({'error': 'Invalid state parameter format'}), 400
+
+    # 注意：完整的 state 验证需要服务端会话管理
+    # 当前实现为基本格式验证 + 前端验证的双重保护
+    # 建议未来改进：使用 Redis 或数据库存储生成的 state
+
     code = data.get('code')
     if not code:
         return jsonify({'error': 'code is required'}), 400
@@ -100,6 +121,7 @@ def github_callback():
 
 
 @bp.route('/refresh', methods=['POST'])
+@limiter.limit("5 per minute")
 def refresh_token():
     """
     刷新 Token 端点
