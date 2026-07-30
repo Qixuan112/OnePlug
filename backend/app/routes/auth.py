@@ -31,14 +31,15 @@ def get_oauth_config():
 def github_callback():
     """
     GitHub OAuth 回调端点
-    
+
     接收 code，换取 GitHub access_token，创建/更新本地用户，返回 JWT tokens
-    
+
     Request Body:
         {
-            "code": "github_oauth_code"
+            "code": "github_oauth_code",
+            "state": "random_state_string"
         }
-    
+
     Response:
         {
             "access_token": "...",
@@ -55,11 +56,21 @@ def github_callback():
         }
     """
     data = request.get_json()
-    
+
     if not data:
         return jsonify({'error': 'Request body is required'}), 400
-    
+
     code = data.get('code')
+    state = data.get('state')
+
+    # 验证 state 参数
+    if not state:
+        return jsonify({'error': 'Missing state parameter'}), 400
+
+    if not isinstance(state, str) or len(state) < 16:
+        return jsonify({'error': 'Invalid state parameter'}), 400
+
+    # 原有代码继续...
     if not code:
         return jsonify({'error': 'code is required'}), 400
     
