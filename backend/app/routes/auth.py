@@ -7,6 +7,7 @@
 import os
 from flask import Blueprint, request, jsonify
 
+from app import limiter
 from app.services.auth_service import (
     exchange_github_code,
     get_github_user,
@@ -28,6 +29,7 @@ def get_oauth_config():
 
 
 @bp.route('/github/callback', methods=['POST'])
+@limiter.limit("10 per minute")
 def github_callback():
     """
     GitHub OAuth 回调端点
@@ -100,6 +102,7 @@ def github_callback():
 
 
 @bp.route('/refresh', methods=['POST'])
+@limiter.limit("5 per minute")
 def refresh_token():
     """
     刷新 Token 端点
