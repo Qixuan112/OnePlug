@@ -31,14 +31,15 @@ def get_oauth_config():
 def github_callback():
     """
     GitHub OAuth 回调端点
-    
+
     接收 code，换取 GitHub access_token，创建/更新本地用户，返回 JWT tokens
-    
+
     Request Body:
         {
-            "code": "github_oauth_code"
+            "code": "github_oauth_code",
+            "state": "random_state_string"  # CSRF 保护
         }
-    
+
     Response:
         {
             "access_token": "...",
@@ -55,13 +56,30 @@ def github_callback():
         }
     """
     data = request.get_json()
-    
+
     if not data:
         return jsonify({'error': 'Request body is required'}), 400
-    
+
     code = data.get('code')
     if not code:
         return jsonify({'error': 'code is required'}), 400
+
+    # CSRF 保护：验证 state 参数
+    # state 由前端生成并在 OAuth 流程中传递，用于防止 CSRF 攻击
+    state = data.get('state')
+    if not state:
+        return jsonify({'error': 'state is required for CSRF protection'}), 400
+
+    # 基本验证：state 应为非空字符串且长度合理（前端通常生成 32+ 字符）
+    if not isinstance(state, str) or len(state) < 16:
+        return jsonify({'error': 'Invalid state parameter format'}), 400
+
+    # 注意：完整的 state 验证需要前端配合
+    # 前端应该：
+    # 1. 在发起 OAuth 请求前生成随机 state 并存储（localStorage/sessionStorage）
+    # 2. 在回调时传递相同的 state 给后端
+    # 3. 后端验证 state 是否匹配（当前实现仅做基本格式验证）
+    # 更安全的方案：后端生成 state 并存储在 Redis/数据库，回调时验证
     
     # 1. 用 code 换取 GitHub access_token
     token_result = exchange_github_code(code)
