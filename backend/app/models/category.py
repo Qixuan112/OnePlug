@@ -35,11 +35,13 @@ class Category(db.Model):
     )
     
     # 关系定义
+    # 不使用 cascade='all, delete-orphan'，避免删除分类时误删所有关联插件
+    # 删除分类时，插件的 category_id 会被设为 NULL（由外键 ondelete='SET NULL' 控制）
     plugins: Mapped[list['Plugin']] = relationship(
         'Plugin',
         back_populates='category',
         lazy='dynamic',
-        cascade='all, delete-orphan'
+        cascade='save-update'
     )
     
     def __repr__(self) -> str:
