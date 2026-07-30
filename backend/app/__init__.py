@@ -12,6 +12,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 # 加载项目根目录的 .env（app/__init__.py -> app -> backend -> 项目根目录）
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +25,16 @@ from config.config import config
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
+
+# 初始化速率限制器
+# 注意：生产环境建议使用 Redis 作为存储后端
+# 设置环境变量: RATELIMIT_STORAGE_URL=redis://localhost:6379
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",
+    headers_enabled=True
+)
 
 FRONTEND_DIR = os.path.join(PROJECT_ROOT, 'frontend')
 
@@ -74,6 +86,7 @@ def create_app(config_name=None):
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
+    limiter.init_app(app)
 
     # 配置 CORS
     CORS(app, resources={

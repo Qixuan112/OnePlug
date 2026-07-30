@@ -6,6 +6,7 @@
 
 from flask import Blueprint, request, jsonify, g
 
+from app import limiter
 from app.utils.decorators import jwt_required_custom, require_developer
 from app.utils.pagination import parse_pagination
 from app.services.developer_service import (
@@ -77,6 +78,7 @@ def list_my_plugins():
 @bp.route('/plugins', methods=['POST'])
 @jwt_required_custom
 @require_developer
+@limiter.limit("20 per hour")
 def create_plugin():
     """
     提交新插件接口
