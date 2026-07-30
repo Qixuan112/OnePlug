@@ -5,12 +5,15 @@
 """
 
 import requests
+import logging
 from typing import Optional
 from sqlalchemy import desc, asc, or_
 
 from app import db
 from app.models.plugin import Plugin, PluginStatus
 from app.utils.github import parse_github_repo_url
+
+logger = logging.getLogger(__name__)
 
 
 def get_plugins(
@@ -275,7 +278,7 @@ def get_all_plugins() -> list[dict]:
         return [plugin.to_dict() for plugin in plugins]
     except Exception as e:
         # 记录错误但不抛出，让路由层处理
-        print(f"Error fetching all plugins: {e}")
+        logger.error(f"Error fetching all plugins: {e}", exc_info=True)
         return []
 
 
@@ -316,7 +319,7 @@ def update_plugin_manifest(plugin_id: int) -> bool:
         
         manifest_response = requests.get(manifest_url, timeout=10, headers=headers)
         if manifest_response.status_code != 200:
-            print(f"Manifest not found for {owner}/{repo}")
+            logger.warning(f"Manifest not found for {owner}/{repo}")
             return False
         
         # 解析 manifest
@@ -327,12 +330,12 @@ def update_plugin_manifest(plugin_id: int) -> bool:
         # 更新插件
         plugin.manifest = manifest
         db.session.commit()
-        
-        print(f"Updated manifest for plugin {plugin.name}")
+
+        logger.info(f"Updated manifest for plugin {plugin.name}")
         return True
-        
+
     except Exception as e:
-        print(f"Error updating manifest for plugin {plugin_id}: {e}")
+        logger.error(f"Error updating manifest for plugin {plugin_id}: {e}")
         return False
 
 
