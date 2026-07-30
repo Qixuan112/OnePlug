@@ -96,7 +96,6 @@ def proxy_avatar_batch():
 
 
 @bp.route('/cache/<int:cache_id>', methods=['DELETE'])
-@jwt_required()
 @require_admin
 def delete_cache(cache_id: int):
     """
@@ -120,7 +119,6 @@ def delete_cache(cache_id: int):
 
 
 @bp.route('/cache/cleanup', methods=['POST'])
-@jwt_required()
 @require_admin
 def cleanup_cache():
     """
@@ -146,7 +144,6 @@ def cleanup_cache():
 
 
 @bp.route('/cache/stats', methods=['GET'])
-@jwt_required()
 @require_admin
 def cache_statistics():
     """
