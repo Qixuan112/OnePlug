@@ -303,7 +303,14 @@ const utils = {
   },
 
   /**
-   * 把 Markdown 渲染为经过消毒的 HTML
+   * 渲染 Markdown 为安全的 HTML
+   * 使用 marked 解析 + DOMPurify 净化
+   *
+   * 安全配置：
+   * - 禁用危险标签（script, iframe, form 等）
+   * - 禁用事件处理属性（onerror, onclick 等）
+   * - 禁用 data-* 属性
+   * - 限制 URL 协议（仅允许 http/https/mailto 等）
    *
    * README 来自任意 GitHub 仓库，Markdown 允许内嵌原始 HTML，
    * 不消毒直接 innerHTML 会造成存储型 XSS（审核员打开待审插件即中招）。
@@ -322,9 +329,11 @@ const utils = {
 
     return DOMPurify.sanitize(marked.parse(markdown), {
       USE_PROFILES: { html: true },
-      FORBID_TAGS: ['style', 'form', 'input', 'button'],
-      FORBID_ATTR: ['style', 'srcset', 'formaction'],
-      ADD_ATTR: ['target', 'rel']
+      FORBID_TAGS: ['style', 'form', 'input', 'button', 'iframe', 'object', 'embed', 'script'],
+      FORBID_ATTR: ['style', 'srcset', 'formaction', 'onerror', 'onload', 'onclick', 'onmouseover'],
+      ADD_ATTR: ['target', 'rel'],
+      ALLOW_DATA_ATTR: false,
+      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
     });
   },
 
