@@ -39,7 +39,7 @@ class Category(db.Model):
         'Plugin',
         back_populates='category',
         lazy='dynamic',
-        cascade='all, delete-orphan'
+        cascade='save-update'  # 只级联更新，不级联删除
     )
     
     def __repr__(self) -> str:
