@@ -176,9 +176,11 @@ def get_all_plugins_json():
         
         return response, 200
     except Exception as e:
+        # 记录详细错误到日志但不返回给客户端，避免暴露内部实现细节
+        import logging
+        logging.error(f"Error in get_all_plugins: {e}", exc_info=True)
         return jsonify({
-            'error': 'Internal server error',
-            'message': str(e)
+            'error': 'Internal server error'
         }), 500
 
 
