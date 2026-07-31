@@ -348,6 +348,10 @@ def sync_plugin_from_github(plugin_id: int) -> dict:
         return {'status': 'failed', 'plugin_id': plugin_id,
                 'error': f'Failed to parse manifest: {e}'}
 
+    if not new_sha:
+        return {'status': 'failed', 'plugin_id': plugin_id,
+                'error': 'GitHub contents API response missing sha'}
+
     old_sha = plugin.manifest_sha
     if new_sha and old_sha == new_sha:
         # SHA 未变：提前返回，不调 repo API、不写库
@@ -401,7 +405,13 @@ def sync_plugin_from_github(plugin_id: int) -> dict:
     plugin.last_synced_at = now
     plugin.updated_at = now
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Failed to persist sync for plugin {plugin_id}: {e}", exc_info=True)
+        return {'status': 'failed', 'plugin_id': plugin_id,
+                'error': f'Database commit failed: {e}'}
 
     return {
         'status': 'updated',

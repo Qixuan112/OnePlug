@@ -77,6 +77,11 @@ def init_scheduler(app):
 
     _app = app
     interval_minutes = app.config.get('PLUGIN_SYNC_INTERVAL_MINUTES', 60)
+    if not isinstance(interval_minutes, (int, float)) or interval_minutes < 1:
+        logger.warning(
+            f"Invalid PLUGIN_SYNC_INTERVAL_MINUTES={interval_minutes!r}, falling back to 60"
+        )
+        interval_minutes = 60
 
     scheduler = BackgroundScheduler(daemon=True)
     scheduler.add_job(
@@ -89,3 +94,21 @@ def init_scheduler(app):
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown(wait=False))
     _scheduler = scheduler
+
+
+def trigger_sync_now(app):
+    """手动触发一次全量同步（后台线程执行，立即返回）。
+
+    复用 _run_sync 的多 worker 互斥（GET_LOCK）与 app context。
+    供 admin 手动触发接口使用，不依赖 PLUGIN_SYNC_ENABLED 是否开启。
+    """
+    import threading
+
+    def _runner():
+        try:
+            with app.app_context():
+                _run_sync()
+        except Exception as e:
+            logger.error(f"Manual plugin sync failed: {e}", exc_info=True)
+
+    threading.Thread(target=_runner, daemon=True).start()

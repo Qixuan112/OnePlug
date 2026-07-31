@@ -616,27 +616,20 @@ def list_activities():
 @require_admin
 def update_all_manifests():
     """
-    更新所有插件的 manifest 信息接口
+    触发所有已上架（approved）插件的 manifest 同步接口
 
-    从 GitHub 仓库获取 manifest.json 并更新到数据库
+    异步执行（后台线程 + GET_LOCK 互斥），立即返回 202。
+    同步流程：按 manifest.json blob SHA 检测变化，更新 version/manifest/github_data 并归档版本历史。
+    定时调度器（PLUGIN_SYNC_ENABLED）每 PLUGIN_SYNC_INTERVAL_MINUTES 分钟也会自动执行一次。
 
     Response:
-        200 OK
+        202 Accepted
         {
-            "message": "Manifest update completed",
-            "result": {
-                "total": 25,
-                "updated": 20,
-                "failed": 5
-            }
+            "message": "Plugin sync triggered"
         }
     """
-    from app.services.plugin_service import sync_all_approved_plugins
+    from flask import current_app
+    from app.scheduler import trigger_sync_now
 
-    # 执行同步操作
-    result = sync_all_approved_plugins()
-
-    return jsonify({
-        'message': 'Plugin sync completed',
-        'result': result
-    }), 200
+    trigger_sync_now(current_app)
+    return jsonify({'message': 'Plugin sync triggered'}), 202
