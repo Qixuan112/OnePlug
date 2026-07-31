@@ -1,0 +1,11 @@
+# OnePlug Backend - Development / Test Dependencies
+#
+# 安装：pip install -r requirements-dev.txt
+#
+# 运行测试：cd backend && python -m pytest tests/ -x --tb=short
+#
+# 说明：测试代码使用标准库 unittest.mock 做 GitHub API 的 mock，
+# 因此不强制依赖 pytest-mock，但这里一并列出方便开发者选用。
+
+pytest>=7.4
+pytest-mock>=3.12

@@ -631,12 +631,12 @@ def update_all_manifests():
             }
         }
     """
-    from app.services.plugin_service import update_all_plugins_manifest
+    from app.services.plugin_service import sync_all_approved_plugins
 
-    # 执行更新操作
-    result = update_all_plugins_manifest()
+    # 执行同步操作
+    result = sync_all_approved_plugins()
 
     return jsonify({
-        'message': 'Manifest update completed',
+        'message': 'Plugin sync completed',
         'result': result
     }), 200

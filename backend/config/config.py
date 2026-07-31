@@ -69,6 +69,12 @@ class Config:
     # 默认 600 秒（10 分钟）
     PLUGIN_LIST_CACHE_MAX_AGE = int(os.environ.get('PLUGIN_LIST_CACHE_MAX_AGE', '600'))
 
+    # 插件版本自动同步调度器
+    # 是否启用后台定时同步（从 GitHub 拉取 manifest 变更并归档版本）
+    PLUGIN_SYNC_ENABLED = os.environ.get('PLUGIN_SYNC_ENABLED', 'true').lower() == 'true'
+    # 同步间隔（分钟），默认 60
+    PLUGIN_SYNC_INTERVAL_MINUTES = int(os.environ.get('PLUGIN_SYNC_INTERVAL_MINUTES', '60'))
+
     @classmethod
     def validate(cls) -> None:
         """启动前的配置自检，默认不做任何检查"""
@@ -162,6 +168,9 @@ class TestingConfig(Config):
     
     # 禁用 CSRF 保护（测试环境）
     WTF_CSRF_ENABLED = False
+
+    # 测试环境不启动后台同步调度器
+    PLUGIN_SYNC_ENABLED = False
 
 
 # 配置字典

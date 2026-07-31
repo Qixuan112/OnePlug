@@ -7,7 +7,7 @@ Plugin 模型模块
 import enum
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import Integer, String, Text, DateTime, Enum, ForeignKey, JSON, Index
+from sqlalchemy import Integer, String, Text, DateTime, Enum, ForeignKey, JSON, Index, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from app import db
@@ -63,6 +63,16 @@ class Plugin(db.Model):
         comment='GitHub 数据，包括 stars, forks, last_updated 等'
     )
     version: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    manifest_sha: Mapped[str | None] = mapped_column(
+        String(40),
+        nullable=True,
+        comment='manifest.json 的 blob SHA，用于检测仓库内容是否变化'
+    )
+    last_synced_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+        comment='上次从 GitHub 成功同步 manifest 的时间'
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
@@ -90,6 +100,12 @@ class Plugin(db.Model):
         lazy='dynamic',
         cascade='all, delete-orphan'
     )
+    versions: Mapped[list['PluginVersion']] = relationship(
+        'PluginVersion',
+        back_populates='plugin',
+        cascade='all, delete-orphan',
+        order_by='PluginVersion.synced_at.desc()'
+    )
 
     # 表级约束和索引
     __table_args__ = (
@@ -115,6 +131,8 @@ class Plugin(db.Model):
             'manifest': self.manifest,
             'github_data': self.github_data,
             'version': self.version,
+            'manifest_sha': self.manifest_sha,
+            'last_synced_at': self.last_synced_at.isoformat() if self.last_synced_at else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }
@@ -147,3 +165,73 @@ class Plugin(db.Model):
     def can_be_edited(self) -> bool:
         """检查插件是否可以被编辑"""
         return self.status in (PluginStatus.draft, PluginStatus.rejected)
+
+
+class PluginVersion(db.Model):
+    """
+    插件版本历史模型
+
+    每次从 GitHub 同步到 manifest 变化（blob SHA 不同）时，归档一个版本记录。
+    同一插件同一时间只有一行 is_current=True。
+    manifest_sha 是版本的唯一标识，比 version 字符串更可靠（开发者可能忘 bump version）。
+    """
+    __tablename__ = 'plugin_versions'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    plugin_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey('plugins.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True
+    )
+    version: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    manifest_sha: Mapped[str] = mapped_column(
+        String(40),
+        nullable=False,
+        comment='manifest.json 的 blob SHA，版本唯一标识'
+    )
+    manifest_snapshot: Mapped[dict[str, Any] | None] = mapped_column(
+        JSON,
+        nullable=True,
+        comment='该版本的 manifest 快照'
+    )
+    github_data_snapshot: Mapped[dict[str, Any] | None] = mapped_column(
+        JSON,
+        nullable=True,
+        comment='该版本同步时的 GitHub 数据快照'
+    )
+    synced_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    is_current: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+        index=True
+    )
+
+    plugin: Mapped['Plugin'] = relationship('Plugin', back_populates='versions')
+
+    __table_args__ = (
+        Index('idx_plugin_version_plugin_current', 'plugin_id', 'is_current'),
+        Index('idx_plugin_version_plugin_sha', 'plugin_id', 'manifest_sha'),
+    )
+
+    def __repr__(self) -> str:
+        sha_short = self.manifest_sha[:8] if self.manifest_sha else 'none'
+        return f'<PluginVersion plugin={self.plugin_id} sha={sha_short} current={self.is_current}>'
+
+    def to_dict(self) -> dict:
+        """将版本记录转换为字典"""
+        return {
+            'id': self.id,
+            'plugin_id': self.plugin_id,
+            'version': self.version,
+            'manifest_sha': self.manifest_sha,
+            'manifest_snapshot': self.manifest_snapshot,
+            'github_data_snapshot': self.github_data_snapshot,
+            'synced_at': self.synced_at.isoformat() if self.synced_at else None,
+            'is_current': self.is_current,
+        }

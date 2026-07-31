@@ -4,13 +4,17 @@
 提供插件相关的业务逻辑，包括获取插件列表、详情和 GitHub 数据
 """
 
+import os
+import json
+import base64
 import requests
 import logging
+from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy import desc, asc, or_
 
 from app import db
-from app.models.plugin import Plugin, PluginStatus
+from app.models.plugin import Plugin, PluginStatus, PluginVersion
 from app.utils.github import parse_github_repo_url
 
 logger = logging.getLogger(__name__)
@@ -290,85 +294,176 @@ def get_all_plugins() -> list[dict]:
         return []
 
 
-def update_plugin_manifest(plugin_id: int) -> bool:
+def sync_plugin_from_github(plugin_id: int) -> dict:
     """
-    更新插件的 manifest 信息
-    
-    从 GitHub 仓库获取 manifest.json 并保存到数据库
-    
-    Args:
-        plugin_id: 插件ID
-    
+    从 GitHub 同步单个插件的 manifest。
+
+    流程：
+      1. 取插件；不存在 / 无 repo_url / URL 解析失败 -> failed，且不发起 HTTP。
+      2. GET .../contents/manifest.json 拿 blob sha 与 base64 content；
+         请求异常或非 200 -> failed，不写库、不新增版本、不改插件字段。
+      3. 解析 manifest；解析失败 -> failed。
+      4. 若 new_sha 与已存 manifest_sha 相同 -> unchanged，立即返回（不调 repo API）。
+      5. 否则（变化或首次同步）best-effort 刷新 github_data（GET .../repos/{owner}/{repo}），
+         归档旧 current 版本、新增 current 版本、更新插件字段，返回 updated。
+
     Returns:
-        是否更新成功
+        {'status': 'failed'|'unchanged'|'updated', 'plugin_id': int, ...}
     """
+    plugin = db.session.get(Plugin, plugin_id)
+    if not plugin:
+        return {'status': 'failed', 'plugin_id': plugin_id, 'error': 'Plugin not found'}
+
+    if not plugin.repo_url:
+        return {'status': 'failed', 'plugin_id': plugin_id, 'error': 'Plugin has no repo_url'}
+
+    repo_info = parse_github_repo_url(plugin.repo_url)
+    if not repo_info:
+        return {'status': 'failed', 'plugin_id': plugin_id, 'error': 'Invalid GitHub repo_url'}
+
+    owner, repo = repo_info
+
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    token = os.environ.get('GITHUB_API_TOKEN')
+    if token:
+        headers['Authorization'] = f'token {token}'
+
+    contents_url = f'https://api.github.com/repos/{owner}/{repo}/contents/manifest.json'
     try:
-        import os
-        plugin = db.session.query(Plugin).get(plugin_id)
-        if not plugin or not plugin.repo_url:
-            return False
-        
-        # 解析 GitHub URL
-        import base64
-        import json
-        import requests
+        resp = requests.get(contents_url, timeout=10, headers=headers)
+    except requests.RequestException as e:
+        return {'status': 'failed', 'plugin_id': plugin_id,
+                'error': f'GitHub request failed: {e}'}
 
-        repo_info = _parse_github_repo_url(plugin.repo_url)
-        if not repo_info:
-            return False
+    if resp.status_code != 200:
+        return {'status': 'failed', 'plugin_id': plugin_id,
+                'error': f'GitHub contents API returned {resp.status_code}'}
 
-        owner, repo = repo_info
-
-
-        # 获取 manifest.json
-        manifest_url = f'https://api.github.com/repos/{owner}/{repo}/contents/manifest.json'
-        token = os.environ.get('GITHUB_API_TOKEN')
-        headers = {'Authorization': f'token {token}'} if token else {}
-        
-        manifest_response = requests.get(manifest_url, timeout=10, headers=headers)
-        if manifest_response.status_code != 200:
-            logger.warning(f"Manifest not found for {owner}/{repo}")
-            return False
-        
-        # 解析 manifest
-        manifest_data = manifest_response.json()
-        manifest_content = base64.b64decode(manifest_data.get('content', '')).decode('utf-8')
-        manifest = json.loads(manifest_content)
-        
-        # 更新插件
-        plugin.manifest = manifest
-        db.session.commit()
-
-        logger.info(f"Updated manifest for plugin {plugin.name}")
-        return True
-
+    try:
+        data = resp.json()
+        new_sha = data.get('sha')
+        content_b64 = data.get('content', '')
+        manifest = json.loads(base64.b64decode(content_b64).decode('utf-8'))
     except Exception as e:
-        logger.error(f"Error updating manifest for plugin {plugin_id}: {e}")
-        return False
+        return {'status': 'failed', 'plugin_id': plugin_id,
+                'error': f'Failed to parse manifest: {e}'}
+
+    old_sha = plugin.manifest_sha
+    if new_sha and old_sha == new_sha:
+        # SHA 未变：提前返回，不调 repo API、不写库
+        return {'status': 'unchanged', 'plugin_id': plugin_id}
+
+    # SHA 变化或首次同步：best-effort 刷新 github_data
+    github_data = None
+    repo_api_url = f'https://api.github.com/repos/{owner}/{repo}'
+    try:
+        repo_resp = requests.get(repo_api_url, timeout=10, headers=headers)
+        if repo_resp.status_code == 200:
+            rdata = repo_resp.json()
+            github_data = {
+                'stars': rdata.get('stargazers_count', 0),
+                'forks': rdata.get('forks_count', 0),
+                'stargazers_count': rdata.get('stargazers_count', 0),
+                'forks_count': rdata.get('forks_count', 0),
+                'last_updated': rdata.get('updated_at'),
+                'open_issues': rdata.get('open_issues_count', 0),
+                'language': rdata.get('language'),
+                'license': rdata.get('license', {}).get('name') if rdata.get('license') else None,
+                'description': rdata.get('description'),
+                'homepage': rdata.get('homepage'),
+            }
+    except requests.RequestException:
+        github_data = None
+
+    version = manifest.get('version') if isinstance(manifest, dict) else None
+    now = datetime.now(timezone.utc)
+
+    # 归档旧的 current 版本
+    db.session.query(PluginVersion).filter_by(
+        plugin_id=plugin_id, is_current=True
+    ).update({'is_current': False})
+
+    new_version = PluginVersion(
+        plugin_id=plugin_id,
+        version=version,
+        manifest_sha=new_sha,
+        manifest_snapshot=manifest,
+        github_data_snapshot=github_data,
+        synced_at=now,
+        is_current=True,
+    )
+    db.session.add(new_version)
+
+    plugin.manifest = manifest
+    plugin.version = version
+    plugin.manifest_sha = new_sha
+    plugin.github_data = github_data
+    plugin.last_synced_at = now
+    plugin.updated_at = now
+
+    db.session.commit()
+
+    return {
+        'status': 'updated',
+        'plugin_id': plugin_id,
+        'version': version,
+        'old_sha': old_sha,
+        'new_sha': new_sha,
+    }
 
 
-def update_all_plugins_manifest() -> dict:
+def sync_all_approved_plugins() -> dict:
     """
-    更新所有插件的 manifest 信息
-    
+    同步所有已批准（approved）插件。
+
+    逐个通过模块属性方式调用 sync_plugin_from_github（便于测试 patch）。
+    单个插件抛异常时计入 failed，不影响其余插件继续同步。
+
     Returns:
-        更新结果统计
+        {'total': int, 'updated': int, 'unchanged': int, 'failed': int}
     """
     plugins = db.session.query(Plugin).filter(
         Plugin.status == PluginStatus.approved
     ).all()
-    
+
+    total = len(plugins)
     updated = 0
+    unchanged = 0
     failed = 0
-    
+
     for plugin in plugins:
-        if update_plugin_manifest(plugin.id):
-            updated += 1
-        else:
+        try:
+            result = sync_plugin_from_github(plugin.id)
+            status = result.get('status')
+            if status == 'updated':
+                updated += 1
+            elif status == 'unchanged':
+                unchanged += 1
+            else:
+                failed += 1
+        except Exception as e:
+            logger.error(f"Sync raised for plugin {plugin.id}: {e}", exc_info=True)
             failed += 1
-    
+
     return {
-        'total': len(plugins),
+        'total': total,
         'updated': updated,
-        'failed': failed
+        'unchanged': unchanged,
+        'failed': failed,
     }
+
+
+def get_plugin_versions(plugin_id: int) -> list[dict]:
+    """
+    获取插件的版本历史（按 synced_at 降序）。
+
+    Args:
+        plugin_id: 插件ID
+
+    Returns:
+        版本字典列表（每个元素为 PluginVersion.to_dict()）；无记录或插件不存在均返回 []。
+    """
+    versions = db.session.query(PluginVersion).filter_by(
+        plugin_id=plugin_id
+    ).order_by(PluginVersion.synced_at.desc()).all()
+    return [v.to_dict() for v in versions]
