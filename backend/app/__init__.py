@@ -98,7 +98,7 @@ def create_app(config_name=None):
     })
     
     # 注册模型（确保 SQLAlchemy 能识别所有模型）
-    from app.models import User, Category, Plugin, Review, AuditLog, AvatarCache
+    from app.models import User, Category, Plugin, PluginVersion, Review, AuditLog, AvatarCache
     
     # 注册蓝图
     from app.routes import auth, user, plugins, categories, developer, reviewer, admin, avatar
@@ -199,5 +199,9 @@ def create_app(config_name=None):
 
     # 配置日志系统
     setup_logging(app)
+
+    # 启动插件版本自动同步调度器（testing/显式关闭时内部会直接 return）
+    from app.scheduler import init_scheduler
+    init_scheduler(app)
 
     return app

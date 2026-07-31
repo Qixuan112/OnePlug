@@ -241,6 +241,42 @@ def get_plugin_detail(plugin_id: int):
     return jsonify(result), 200
 
 
+@bp.route('/<int:plugin_id>/versions', methods=['GET'])
+def get_plugin_versions_endpoint(plugin_id: int):
+    """
+    获取插件版本历史接口（公开，无需认证）
+
+    仅对已上架（approved）插件暴露版本历史。插件不存在或未上架返回 404。
+
+    Path Parameters:
+        - plugin_id: 插件ID
+
+    Response:
+        {
+            "items": [
+                {
+                    "id": 1,
+                    "plugin_id": 1,
+                    "version": "1.0.0",
+                    "manifest_sha": "...",
+                    "manifest_snapshot": {...},
+                    "github_data_snapshot": {...},
+                    "synced_at": "2024-01-01T00:00:00+00:00",
+                    "is_current": true
+                }
+            ]
+        }
+    """
+    from app.services.plugin_service import get_plugin_versions
+
+    plugin = get_plugin_by_id(plugin_id)
+    if not plugin:
+        return jsonify({'error': 'Plugin not found'}), 404
+
+    versions = get_plugin_versions(plugin_id)
+    return jsonify({'items': versions}), 200
+
+
 @bp.route('/validate', methods=['POST'])
 def validate_repo():
     """

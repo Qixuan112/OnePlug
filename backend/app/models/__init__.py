@@ -6,7 +6,7 @@
 
 from .user import User, UserRole
 from .category import Category
-from .plugin import Plugin
+from .plugin import Plugin, PluginVersion
 from .review import Review
 from .audit_log import AuditLog
 from .avatar_cache import AvatarCache
@@ -16,6 +16,7 @@ __all__ = [
     'UserRole',
     'Category',
     'Plugin',
+    'PluginVersion',
     'Review',
     'AuditLog',
     'AvatarCache',
