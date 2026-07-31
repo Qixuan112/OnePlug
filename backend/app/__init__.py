@@ -8,6 +8,7 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, send_from_directory
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -74,6 +75,10 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # 反代（nginx）后取真实客户端 IP：信任一层 X-Forwarded-* 头，
+    # 否则 request.remote_addr 全是 127.0.0.1，限流会全站共享一个桶。
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
     # 只打印数据库方言，避免把带密码的连接串写进日志
     db_dialect = (config_class.SQLALCHEMY_DATABASE_URI or '').split('://')[0]
     print(f"[INIT] config_name={config_name}, db_dialect={db_dialect or 'unknown'}")
@@ -113,6 +118,7 @@ def create_app(config_name=None):
     
     # 健康检查端点
     @app.route('/health')
+    @limiter.exempt
     def health_check():
         return {'status': 'healthy', 'message': 'Service is running'}
     

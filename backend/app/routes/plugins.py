@@ -6,6 +6,7 @@
 
 from flask import Blueprint, request, jsonify
 
+from app import limiter
 from app.services.plugin_service import (
     get_plugins,
     get_plugin_by_id,
@@ -20,6 +21,7 @@ bp = Blueprint('plugins', __name__)
 
 
 @bp.route('', methods=['GET'])
+@limiter.exempt
 def list_plugins():
     """
     获取插件列表接口
@@ -82,6 +84,7 @@ def list_plugins():
 
 
 @bp.route('/all', methods=['GET'])
+@limiter.exempt
 def get_all_plugins_json():
     """
     获取所有插件信息的 JSON 接口
@@ -184,6 +187,7 @@ def get_all_plugins_json():
 
 
 @bp.route('/<int:plugin_id>', methods=['GET'])
+@limiter.exempt
 def get_plugin_detail(plugin_id: int):
     """
     获取插件详情接口
@@ -242,6 +246,7 @@ def get_plugin_detail(plugin_id: int):
 
 
 @bp.route('/<int:plugin_id>/versions', methods=['GET'])
+@limiter.exempt
 def get_plugin_versions_endpoint(plugin_id: int):
     """
     获取插件版本历史接口（公开，无需认证）
@@ -330,6 +335,7 @@ def validate_repo():
 
 
 @bp.route('/developers', methods=['GET'])
+@limiter.exempt
 def list_developers():
     """
     获取开发者列表接口

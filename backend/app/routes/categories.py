@@ -6,12 +6,14 @@
 
 from flask import Blueprint, jsonify
 
+from app import limiter
 from app.services.category_service import get_all_categories
 
 bp = Blueprint('categories', __name__)
 
 
 @bp.route('', methods=['GET'])
+@limiter.exempt
 def list_categories():
     """
     获取分类列表接口
