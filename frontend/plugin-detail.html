@@ -395,8 +395,19 @@
                 </div>
               </div>
             ` : ''}
+
+            <!-- Version History -->
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+              <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;" data-i18n="detail.tabs.versions">${i18n.t('detail.tabs.versions')}</h3>
+              <div id="version-history-container">
+                <p style="margin: 0; color: var(--text-secondary);" data-i18n="detail.versionHistory.loading">${i18n.t('detail.versionHistory.loading')}</p>
+              </div>
+            </div>
           </div>
         `;
+
+        // 异步加载版本历史，不阻塞主详情渲染
+        loadVersionHistory(pluginId);
       } catch (error) {
         container.innerHTML = `
           <div class="empty-state">
@@ -408,6 +419,45 @@
             <a href="store.html" class="btn btn-primary" style="margin-top: 1rem;" data-i18n="detail.back">返回商店</a>
           </div>
         `;
+      }
+    }
+
+    // 加载版本历史（独立 fetch，不阻塞主详情；失败仅影响版本区，不影响主详情）
+    async function loadVersionHistory(pluginId) {
+      const container = document.getElementById('version-history-container');
+      if (!container) return;
+      try {
+        const data = await api.get(`/plugins/${pluginId}/versions`);
+        const items = (data && Array.isArray(data.items)) ? data.items : [];
+        if (items.length === 0) {
+          container.innerHTML = `<p style="margin: 0; color: var(--text-secondary);" data-i18n="detail.versionHistory.empty">${i18n.t('detail.versionHistory.empty')}</p>`;
+          return;
+        }
+        // 按 API 返回顺序渲染（后端已按 synced_at 降序）
+        container.innerHTML = items.map(item => {
+          const versionLabel = item.version
+            ? `<span style="font-weight: 600;">${esc(item.version)}</span>`
+            : `<span style="font-weight: 600; color: var(--text-secondary);" data-i18n="detail.versionHistory.noVersion">${i18n.t('detail.versionHistory.noVersion')}</span>`;
+          const currentBadge = item.is_current
+            ? `<span class="badge badge-success" data-i18n="detail.versionHistory.current">${i18n.t('detail.versionHistory.current')}</span>`
+            : '';
+          const sha = item.manifest_sha ? esc(String(item.manifest_sha).slice(0, 8)) : '';
+          const syncedAt = utils.formatDate(item.synced_at);
+          return `
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color);">
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0;">
+                ${versionLabel}
+                ${currentBadge}
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                ${sha ? `<code style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 0.15em 0.4em; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem; color: var(--text-secondary);">${sha}</code>` : ''}
+                <span style="color: var(--text-secondary); font-size: 0.875rem; white-space: nowrap;">${esc(syncedAt)}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        container.innerHTML = `<p style="margin: 0; color: var(--text-secondary);" data-i18n="detail.versionHistory.loadFailed">${i18n.t('detail.versionHistory.loadFailed')}</p>`;
       }
     }
 

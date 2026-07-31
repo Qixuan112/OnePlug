@@ -107,7 +107,12 @@ const translations = {
     'detail.manifest.version': '版本',
     'detail.manifest.author': '作者',
     'detail.emptyId': '插件ID不能为空',
-    
+    'detail.versionHistory.empty': '暂无版本历史',
+    'detail.versionHistory.current': '当前版本',
+    'detail.versionHistory.noVersion': '未版本号',
+    'detail.versionHistory.loadFailed': '版本历史加载失败',
+    'detail.versionHistory.loading': '加载版本历史...',
+
     // 登录
     'login.title': '欢迎回来',
     'login.subtitle': '使用 GitHub 账号登录以继续',
@@ -599,7 +604,12 @@ const translations = {
     'detail.manifest.version': 'Version',
     'detail.manifest.author': 'Author',
     'detail.emptyId': 'Plugin ID cannot be empty',
-    
+    'detail.versionHistory.empty': 'No version history yet',
+    'detail.versionHistory.current': 'Current',
+    'detail.versionHistory.noVersion': 'No version',
+    'detail.versionHistory.loadFailed': 'Failed to load version history',
+    'detail.versionHistory.loading': 'Loading version history...',
+
     // 登录
     'login.title': 'Welcome Back',
     'login.subtitle': 'Sign in with your GitHub account to continue',
