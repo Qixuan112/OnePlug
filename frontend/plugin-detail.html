@@ -428,7 +428,10 @@
       if (!container) return;
       try {
         const data = await api.get(`/plugins/${pluginId}/versions`);
-        const items = (data && Array.isArray(data.items)) ? data.items : [];
+        if (!data || !Array.isArray(data.items)) {
+          throw new Error('Invalid versions response');
+        }
+        const items = data.items;
         if (items.length === 0) {
           container.innerHTML = `<p style="margin: 0; color: var(--text-secondary);" data-i18n="detail.versionHistory.empty">${i18n.t('detail.versionHistory.empty')}</p>`;
           return;

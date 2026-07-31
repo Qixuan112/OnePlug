@@ -109,7 +109,7 @@ const translations = {
     'detail.emptyId': '插件ID不能为空',
     'detail.versionHistory.empty': '暂无版本历史',
     'detail.versionHistory.current': '当前版本',
-    'detail.versionHistory.noVersion': '未版本号',
+    'detail.versionHistory.noVersion': '无版本号',
     'detail.versionHistory.loadFailed': '版本历史加载失败',
     'detail.versionHistory.loading': '加载版本历史...',
 
