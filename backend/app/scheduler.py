@@ -47,7 +47,7 @@ def _run_sync():
         try:
             sync_all_approved_plugins()
         finally:
-            conn.execute(text(f"RELEASE_LOCK('{_LOCK_NAME}')"))
+            conn.execute(text(f"SELECT RELEASE_LOCK('{_LOCK_NAME}')"))
 
 
 def _sync_job():
